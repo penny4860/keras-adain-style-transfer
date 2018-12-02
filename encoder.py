@@ -106,29 +106,21 @@ if __name__ == '__main__':
         net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
         # preds = sess.run(net, feed_dict = {c_filename: content})
         
-        for vgg in c_vgg[:5]:
-            print(vgg)
-            
-        preprocess_layer = c_vgg[0]
-        images_torch = sess.run(preprocess_layer, feed_dict = {c_filename: content})
+        preprocess_layer = c_vgg[3]
+        images_torch = sess.run(net, feed_dict = {c_filename: content})
+
+    print(images_torch.shape)
 
     images_keras = load_and_preprocess_img(content, [224,224])
-    print(images_torch.max(), images_torch.min())
-    print(images_keras.max(), images_keras.min())
+    vgg = vgg19(vgg_t7_file, [224,224,3])
     
-    print(images_torch[0, 0, 0, :3])
-    print(images_keras[0, 0, 0, :3])
-
-    print(images_torch[0, 0, 1, :3])
-    print(images_keras[0, 0, 1, :3])
+    # model = tf.keras.models.Model(vgg.input, vgg.layers[1].output)
+    images_keras = vgg.predict(images_keras)
+          
+    import matplotlib.pyplot as plt
+    plt.imshow(images_torch[0, :, :, 100])
+    plt.show()
+    plt.imshow(images_keras[0, :, :, 100])
+    plt.show()
     
-    diff = images_torch - images_keras
-    print(diff.max(), diff.min())
-    
-    
-# #     vgg = vgg19(vgg_t7_file, [224,224,3])
-# #     features = vgg.predict(images_keras)
-# #     diff = features - img
-#     print(diff.max())
-#     
 
