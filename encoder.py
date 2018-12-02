@@ -33,9 +33,6 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
     def call(self, x):
         return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), "REFLECT")
 
-    def compute_output_shape(self, input_shape):
-        pass
-
 
 def vgg19(t7_file, input_shape=[224,224,3]):
     
