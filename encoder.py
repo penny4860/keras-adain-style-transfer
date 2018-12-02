@@ -25,6 +25,18 @@ def load_and_preprocess_img(img_fname, img_size=[224,224]):
     return images_keras
 
 
+class SpatialReflectionPadding(tf.keras.layers.Layer):
+
+    def __init__(self, **kwargs):
+        super(SpatialReflectionPadding, self).__init__(**kwargs)
+
+    def call(self, x):
+        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), "REFLECT")
+
+    def compute_output_shape(self, input_shape):
+        pass
+
+
 def vgg19(t7_file, input_shape=[224,224,3]):
     
     def _get_params(t7_file):
@@ -61,7 +73,8 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         img_input = Input(shape=input_shape)
     
         # Block 1
-        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
+        x = SpatialReflectionPadding()(img_input)
+        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
         
@@ -122,10 +135,12 @@ if __name__ == '__main__':
         model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
         return model.predict(images_keras)
 
-    images_torch = run_from_torch(content, layer_idx=3, resize=[32,32])
+    images_torch = run_from_torch(content, layer_idx=1, resize=[32,32])
     images_keras = run_from_keras(content, layer_idx=1, resize=[32,32])
-    print(calc_diff(images_torch, images_keras))
-          
+    
+    print(images_torch.shape, images_keras.shape)
+    print("difference = ", calc_diff(images_torch, images_keras))
+
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
     for i in range(3):
@@ -133,6 +148,5 @@ if __name__ == '__main__':
         plt.imshow(images_torch[0, :, :, i])
         plt.subplot(1, 2, 2)
         plt.imshow(images_keras[0, :, :, i])
-        plt.axis("off")
         plt.show()
 
