@@ -122,8 +122,8 @@ if __name__ == '__main__':
         model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
         return model.predict(images_keras)
 
-    images_torch = run_from_torch(content, layer_idx=0, resize=[32,32])
-    images_keras = run_from_keras(content, layer_idx=0, resize=[32,32])
+    images_torch = run_from_torch(content, layer_idx=3, resize=[32,32])
+    images_keras = run_from_keras(content, layer_idx=1, resize=[32,32])
     print(calc_diff(images_torch, images_keras))
           
     import matplotlib.pyplot as plt
