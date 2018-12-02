@@ -118,9 +118,12 @@ if __name__ == '__main__':
     images_keras = vgg.predict(images_keras)
           
     import matplotlib.pyplot as plt
-    plt.imshow(images_torch[0, :, :, 100])
-    plt.show()
-    plt.imshow(images_keras[0, :, :, 100])
-    plt.show()
-    
+    fig, ax = plt.subplots()
+    for i in range(100):
+        plt.subplot(1, 2, 1)
+        plt.imshow(images_torch[0, :, :, i])
+        plt.subplot(1, 2, 2)
+        plt.imshow(images_keras[0, :, :, i])
+        plt.axis("off")
+        plt.show()
 
