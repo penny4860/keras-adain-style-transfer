@@ -75,7 +75,8 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         # Block 1
         x = SpatialReflectionPadding()(img_input)
         x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
         
         # Block 2
@@ -135,8 +136,8 @@ if __name__ == '__main__':
         model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
         return model.predict(images_keras)
 
-    images_torch = run_from_torch(content, layer_idx=1, resize=[32,32])
-    images_keras = run_from_keras(content, layer_idx=1, resize=[32,32])
+    images_torch = run_from_torch(content, layer_idx=3, resize=[32,32])
+    images_keras = run_from_keras(content, layer_idx=2, resize=[32,32])
     
     print(images_torch.shape, images_keras.shape)
     print("difference = ", calc_diff(images_torch, images_keras))
