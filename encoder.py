@@ -17,7 +17,7 @@ def load_and_preprocess_img(img_fname, img_size=[224,224]):
         images = sess.run(c, feed_dict = {c_filename: img_fname})
         print(images.shape)
 
-    images_keras = preprocess_input(images[:,:,:,::-1] * 255)
+    images_keras = preprocess_input(images * 255)
     return images_keras
 
 
@@ -104,11 +104,31 @@ if __name__ == '__main__':
         c, c_filename = image_from_file(g, 'content_image', size=resize)
          
         net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
-        preds = sess.run(net, feed_dict = {c_filename: content})
+        # preds = sess.run(net, feed_dict = {c_filename: content})
+        
+        for vgg in c_vgg[:5]:
+            print(vgg)
+            
+        preprocess_layer = c_vgg[0]
+        images_torch = sess.run(preprocess_layer, feed_dict = {c_filename: content})
+
     images_keras = load_and_preprocess_img(content, [224,224])
-    vgg = vgg19(vgg_t7_file, [224,224,3])
-    features = vgg.predict(images_keras)
-    diff = features - preds
-    print(diff.max())
+    print(images_torch.max(), images_torch.min())
+    print(images_keras.max(), images_keras.min())
     
+    print(images_torch[0, 0, 0, :3])
+    print(images_keras[0, 0, 0, :3])
+
+    print(images_torch[0, 0, 1, :3])
+    print(images_keras[0, 0, 1, :3])
+    
+    diff = images_torch - images_keras
+    print(diff.max(), diff.min())
+    
+    
+# #     vgg = vgg19(vgg_t7_file, [224,224,3])
+# #     features = vgg.predict(images_keras)
+# #     diff = features - img
+#     print(diff.max())
+#     
 
