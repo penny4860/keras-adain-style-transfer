@@ -112,12 +112,19 @@ if __name__ == '__main__':
         diff = abs(diff)
         return diff.max()
 
-    images_torch = run_from_torch(content, layer_idx=0, resize=[32,32])
-    images_keras = load_and_preprocess_img(content, [32,32])
-    print(calc_diff(images_torch, images_keras))
+    def run_from_keras(img_fname, layer_idx, resize):
+        vgg = vgg19(vgg_t7_file, [resize[0],resize[1],3])
+        images_keras = load_and_preprocess_img(img_fname, resize)
 
-#     vgg = vgg19(vgg_t7_file, [224,224,3])
-#     images_keras = vgg.predict(images_keras)
+        if layer_idx == 0:
+            return images_keras
+        
+        model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
+        return model.predict(images_keras)
+
+    images_torch = run_from_torch(content, layer_idx=0, resize=[32,32])
+    images_keras = run_from_keras(content, layer_idx=0, resize=[32,32])
+    print(calc_diff(images_torch, images_keras))
           
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
