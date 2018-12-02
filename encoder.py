@@ -95,7 +95,7 @@ def vgg19(t7_file, input_shape=[224,224,3]):
     model = _build_model(input_shape)
     weights, biases = _get_params(t7_file)
     _set_params(model, weights, biases)
-    
+    # model.load_weights("vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
     return model
 
 
