@@ -3,6 +3,10 @@
 import os
 from adain import PROJECT_ROOT
 
+import tensorflow as tf
+from AdaIN import image_from_file, graph_from_t7
+
+
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
 vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
 content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
@@ -96,30 +100,28 @@ def vgg19(t7_file, input_shape=[224,224,3]):
 
 
 if __name__ == '__main__':
+    def run_from_torch(img_fname, layer_idx, resize):
+        with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
+            c, c_filename = image_from_file(g, 'content_image', size=resize)
+            net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
+            images_torch = sess.run(c_vgg[layer_idx], feed_dict = {c_filename: img_fname})
+        return images_torch
 
-    import tensorflow as tf
-    from AdaIN import image_from_file, graph_from_t7
-    resize = [224,224]
-    with tf.Graph().as_default() as g, tf.Session(graph=g) as sess, tf.variable_scope(tf.get_variable_scope(), reuse=False) as scope:
-        c, c_filename = image_from_file(g, 'content_image', size=resize)
-         
-        net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
-        # preds = sess.run(net, feed_dict = {c_filename: content})
-        
-        preprocess_layer = c_vgg[3]
-        images_torch = sess.run(net, feed_dict = {c_filename: content})
+    def calc_diff(img1, img2):
+        diff = img1 - img2
+        diff = abs(diff)
+        return diff.max()
 
-    print(images_torch.shape)
+    images_torch = run_from_torch(content, layer_idx=0, resize=[32,32])
+    images_keras = load_and_preprocess_img(content, [32,32])
+    print(calc_diff(images_torch, images_keras))
 
-    images_keras = load_and_preprocess_img(content, [224,224])
-    vgg = vgg19(vgg_t7_file, [224,224,3])
-    
-    # model = tf.keras.models.Model(vgg.input, vgg.layers[1].output)
-    images_keras = vgg.predict(images_keras)
+#     vgg = vgg19(vgg_t7_file, [224,224,3])
+#     images_keras = vgg.predict(images_keras)
           
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
-    for i in range(100):
+    for i in range(3):
         plt.subplot(1, 2, 1)
         plt.imshow(images_torch[0, :, :, i])
         plt.subplot(1, 2, 2)
