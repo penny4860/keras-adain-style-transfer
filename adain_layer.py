@@ -93,7 +93,7 @@ if __name__ == '__main__':
     
     features_keras = model.predict([content_imgs, style_imgs])
     print(features_keras.shape)
-    print(calc_diff(features_torch, features_keras))
+    print("scores = ", calc_diff(features_torch, features_keras))
     
 
 
