@@ -4,12 +4,13 @@ import os
 from adain import PROJECT_ROOT
 
 import tensorflow as tf
-from AdaIN import image_from_file, graph_from_t7
+from AdaIN import image_from_file, graph_from_t7, AdaIN
 
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
 vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
 content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
+style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
 
 
 def load_and_preprocess_img(img_fname, img_size=[224,224]):
@@ -131,6 +132,19 @@ if __name__ == '__main__':
             net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
             images_torch = sess.run(c_vgg[layer_idx], feed_dict = {c_filename: img_fname})
         return images_torch
+    
+    def run_adain_layer_from_torch(content_fname, style_fname, resize=[224,224]):
+        with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
+            c, c_filename = image_from_file(g, 'content_image', size=resize)
+            s, s_filename = image_from_file(g, 'style_image',size=resize)
+            _, c_vgg = graph_from_t7(c, g, vgg_t7_file)
+            _, s_vgg = graph_from_t7(s, g, vgg_t7_file)
+            c_vgg = c_vgg[30]
+            s_vgg = s_vgg[30]
+            stylized_content = AdaIN(c_vgg, s_vgg, alpha=1.0)
+            feed_dict = {c_filename: content_fname, s_filename: style_fname}
+            stylized_content = sess.run(stylized_content, feed_dict=feed_dict)
+        return stylized_content
 
     def calc_diff(img1, img2):
         diff = img1 - img2
@@ -147,18 +161,24 @@ if __name__ == '__main__':
         model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
         return model.predict(images_keras)
 
-    # Todo : get layer name : block4_conv1
-    images_torch = run_from_torch(content, layer_idx=30, resize=[224,224])
-    images_keras = run_from_keras(content, layer_idx=-16, resize=[224,224])
-    print(images_torch.shape, images_keras.shape)
-    print("difference = ", calc_diff(images_torch, images_keras))
+    features_torch = run_adain_layer_from_torch(content, style, [224,224])
+    print(features_torch.shape)
 
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    for i in range(3):
-        plt.subplot(1, 2, 1)
-        plt.imshow(images_torch[0, :, :, i])
-        plt.subplot(1, 2, 2)
-        plt.imshow(images_keras[0, :, :, i])
-        plt.show()
+
+#     # Todo : get layer name : block4_conv1
+#     content_feature_torch = run_from_torch(content, layer_idx=30, resize=[224,224])
+#     style_feature_torch = run_from_torch(style, layer_idx=30, resize=[224,224])
+#     # images_keras = run_from_keras(content, layer_idx=-16, resize=[224,224])
+#     
+#     print(content_feature_torch.shape, style_feature_torch.shape)
+#     print("difference = ", calc_diff(content_feature_torch, style_feature_torch))
+# 
+#     import matplotlib.pyplot as plt
+#     fig, ax = plt.subplots()
+#     for i in range(3):
+#         plt.subplot(1, 2, 1)
+#         plt.imshow(content_feature_torch[0, :, :, i])
+#         plt.subplot(1, 2, 2)
+#         plt.imshow(style_feature_torch[0, :, :, i])
+#         plt.show()
 
