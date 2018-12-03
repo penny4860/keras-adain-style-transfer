@@ -14,6 +14,19 @@ content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
 style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
 
 
+def adain_combine_model():
+    content_input_tensor = tf.keras.layers.Input((None, None, 3))
+    style_input_tensor = tf.keras.layers.Input((None, None, 3))
+    
+    encoder = vgg_encoder()
+    content_feature_maps = encoder(content_input_tensor)
+    style_feature_maps = encoder(style_input_tensor)
+    combined_feature_maps = AdaIN()([content_feature_maps, style_feature_maps])
+
+    model = tf.keras.models.Model([content_input_tensor, style_input_tensor], combined_feature_maps)
+    return model
+
+
 class AdaIN(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
         super(AdaIN, self).__init__(**kwargs)
@@ -67,26 +80,15 @@ if __name__ == '__main__':
         diff = img1 - img2
         diff = abs(diff)
         return diff.max()
-
+    
+    # 1. from torch code
     features_torch = run_adain_layer_from_torch(content, style, [224,224])
-    print(features_torch.shape)
+
+    model = adain_combine_model()
 
     from adain.encoder import load_and_preprocess_img
-    content_input_tensor = tf.keras.layers.Input((None, None, 3))
-    style_input_tensor = tf.keras.layers.Input((None, None, 3))
-    
-    encoder = vgg_encoder()
-    content_feature_maps = encoder(content_input_tensor)
-    style_feature_maps = encoder(style_input_tensor)
-    combined_feature_maps = AdaIN()([content_feature_maps, style_feature_maps])
-
-    model = tf.keras.models.Model([content_input_tensor, style_input_tensor], combined_feature_maps)
-    model.summary()
-    
-    
     content_imgs = load_and_preprocess_img(content, [224,224])
     style_imgs = load_and_preprocess_img(style, [224,224])
-    
     features_keras = model.predict([content_imgs, style_imgs])
     print(features_keras.shape)
     print("scores = ", calc_diff(features_torch, features_keras))
