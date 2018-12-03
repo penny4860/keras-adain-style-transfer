@@ -31,10 +31,13 @@ class AdaIN(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
         super(AdaIN, self).__init__(**kwargs)
 
-#     def compute_output_shape(self, input_shape):
-#         return input_shape[0]
+    def compute_output_shape(self, input_shape):
+        assert isinstance(input_shape, list)
+        assert input_shape[0] == input_shape[1]
+        return input_shape[0]
 
     def call(self, x):
+        assert isinstance(x, list)
         # Todo : args
         alpha = 1.0
         content_features, style_features = x[0], x[1]
