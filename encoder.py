@@ -4,7 +4,7 @@ import os
 from adain import PROJECT_ROOT
 
 import tensorflow as tf
-from AdaIN import image_from_file, graph_from_t7, AdaIN
+from AdaIN import image_from_file, graph_from_t7
 
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
@@ -133,17 +133,13 @@ def vgg19(t7_file, input_shape=[224,224,3]):
 
 
 if __name__ == '__main__':
+    from adain.utils import calc_diff
     def run_from_torch(img_fname, layer_idx, resize):
         with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
             c, c_filename = image_from_file(g, 'content_image', size=resize)
             net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
             images_torch = sess.run(c_vgg[layer_idx], feed_dict = {c_filename: img_fname})
         return images_torch
-
-    def calc_diff(img1, img2):
-        diff = img1 - img2
-        diff = abs(diff)
-        return diff.max()
 
     def run_from_keras(img_fname, layer_idx, resize):
         vgg = vgg19(vgg_t7_file, [resize[0],resize[1],3])

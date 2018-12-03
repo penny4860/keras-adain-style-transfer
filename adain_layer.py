@@ -46,6 +46,8 @@ class AdaIN(tf.keras.layers.Layer):
 
 
 if __name__ == '__main__':
+    from adain.utils import calc_diff
+
     vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
     content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
     style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
@@ -76,11 +78,6 @@ if __name__ == '__main__':
             feed_dict = {c_filename: content_fname, s_filename: style_fname}
             stylized_content = sess.run(stylized_content, feed_dict=feed_dict)
         return stylized_content
-
-    def calc_diff(img1, img2):
-        diff = img1 - img2
-        diff = abs(diff)
-        return diff.max()
     
     # 1. from torch code
     features_torch = run_adain_layer_from_torch(content, style, [224,224])
