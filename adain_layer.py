@@ -83,6 +83,7 @@ if __name__ == '__main__':
     features_torch = run_adain_layer_from_torch(content, style, [224,224])
 
     model = adain_combine_model()
+    model.summary()
 
     from adain.encoder import load_and_preprocess_img
     content_imgs = load_and_preprocess_img(content, [224,224])
