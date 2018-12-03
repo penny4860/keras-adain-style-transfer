@@ -147,6 +147,7 @@ if __name__ == '__main__':
         model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
         return model.predict(images_keras)
 
+    # Todo : get layer name : block4_conv1
     images_torch = run_from_torch(content, layer_idx=30, resize=[224,224])
     images_keras = run_from_keras(content, layer_idx=-16, resize=[224,224])
     print(images_torch.shape, images_keras.shape)
