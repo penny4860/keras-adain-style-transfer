@@ -8,12 +8,6 @@ from AdaIN import image_from_file, graph_from_t7
 from adain.encoder import vgg_encoder
 
 
-decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
-vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
-content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
-style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
-
-
 def adain_combine_model():
     content_input_tensor = tf.keras.layers.Input((None, None, 3))
     style_input_tensor = tf.keras.layers.Input((None, None, 3))
@@ -52,6 +46,10 @@ class AdaIN(tf.keras.layers.Layer):
 
 
 if __name__ == '__main__':
+    vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
+    content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
+    style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
+
     def run_adain_layer_from_torch(content_fname, style_fname, resize=[224,224]):
         def AdaIN(content_features, style_features, alpha):
             '''
