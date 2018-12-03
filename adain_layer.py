@@ -71,7 +71,7 @@ if __name__ == '__main__':
     features_torch = run_adain_layer_from_torch(content, style, [224,224])
     print(features_torch.shape)
 
-    from adain.encoder import vgg19, load_and_preprocess_img
+    from adain.encoder import load_and_preprocess_img
     content_input_tensor = tf.keras.layers.Input((None, None, 3))
     style_input_tensor = tf.keras.layers.Input((None, None, 3))
     
