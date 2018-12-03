@@ -13,6 +13,13 @@ content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
 style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
 
 
+def vgg_encoder():
+    vgg = vgg19(vgg_t7_file, [None,None,3])
+    # Todo : hard-coding
+    model = tf.keras.models.Model(vgg.input, vgg.layers[-16].output)
+    return model
+
+
 def load_and_preprocess_img(img_fname, img_size=[224,224]):
     from keras.applications.vgg16 import preprocess_input
     with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:

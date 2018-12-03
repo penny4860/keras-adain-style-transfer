@@ -5,6 +5,7 @@ from adain import PROJECT_ROOT
 
 import tensorflow as tf
 from AdaIN import image_from_file, graph_from_t7
+from adain.encoder import vgg_encoder
 
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
@@ -33,11 +34,6 @@ class AdaIN(tf.keras.layers.Layer):
         normalized_content_features = alpha * normalized_content_features + (1 - alpha) * content_features
         return normalized_content_features
 
-
-def vgg_encoder():
-    vgg = vgg19(vgg_t7_file, [None,None,3])
-    model = tf.keras.models.Model(vgg.input, vgg.layers[-16].output)
-    return model
 
 if __name__ == '__main__':
     def run_adain_layer_from_torch(content_fname, style_fname, resize=[224,224]):
