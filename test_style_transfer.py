@@ -16,8 +16,8 @@ def test_style_transfer():
     model = adain_style_transfer()
     model.summary()
 
-    content_imgs = load_and_preprocess_img(content, [512,512])
-    style_imgs = load_and_preprocess_img(style, [512,512])
+    content_imgs = load_and_preprocess_img(content, (512,512))
+    style_imgs = load_and_preprocess_img(style, (512,512))
     stylized_imgs = model.predict([content_imgs, style_imgs])
     stylized_imgs = stylized_imgs * 256
     stylized_imgs = stylized_imgs[:,:,:,::-1]
