@@ -1,7 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import cv2
 import torchfile
+from keras.applications.vgg16 import preprocess_input
+
+
+def preprocess(image, img_size=(224,224)):
+    """
+    # Args
+        image : bgr-ordered array
+    """
+    image = np.expand_dims(cv2.resize(image.astype(np.float32), img_size), axis=0)
+    image = preprocess_input(image)
+    return image
+
 
 def postprocess(images):
     # scale range
