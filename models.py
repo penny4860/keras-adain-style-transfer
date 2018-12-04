@@ -42,10 +42,29 @@ if __name__ == '__main__':
     style_imgs = load_and_preprocess_img(style, [224,224])
     stylized_imgs = model.predict([content_imgs, style_imgs])
     
-    import matplotlib.pyplot as plt
-    plt.imshow(stylized_imgs[0])
-    plt.show()
-    
-    
-    
+#     import matplotlib.pyplot as plt
+#     plt.imshow(stylized_imgs[0])
+#     plt.show()
+
+    from adain.utils import calc_diff
+    from AdaIN import AdaIN
+    from AdaIN import image_from_file, graph_from_t7, postprocess_image
+    def run_from_torch(content, style, resize):
+        with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
+            c, c_filename = image_from_file(g, 'content_image', size=resize)
+            s, s_filename = image_from_file(g, 'style_image',size=resize)
+            _, c_vgg = graph_from_t7(c, g, vgg_t7_file)
+            _, s_vgg = graph_from_t7(s, g, vgg_t7_file)
+            c_vgg = c_vgg[30]
+            s_vgg = s_vgg[30]
+            stylized_content = AdaIN(c_vgg, s_vgg, 1.0)
+            c_decoded, _ = graph_from_t7(stylized_content, g, decode_t7_file)
+            c_decoded = postprocess_image(c_decoded)
+            
+            feed_dict = {c_filename: content, s_filename: style}
+            images_torch = sess.run(c_decoded, feed_dict=feed_dict)
+        return images_torch
+
+    stylized_torch = run_from_torch(content, style, [224,224])
+    print(calc_diff(stylized_imgs, stylized_torch))
 
