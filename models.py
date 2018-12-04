@@ -10,7 +10,6 @@ Model = tf.keras.models.Model
 UpSampling2D = tf.keras.layers.UpSampling2D
 
 decode_t7_file = os.path.join(PROJECT_ROOT, 'decoder.t7')
-vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
 
 
 def adain_style_transfer():

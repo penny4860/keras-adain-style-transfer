@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from adain import PROJECT_ROOT
 from adain.encoder import load_and_preprocess_img
 from adain.models import adain_style_transfer

@@ -1,10 +1,4 @@
-
-
-def calc_diff(img1, img2):
-    diff = img1 - img2
-    diff = abs(diff)
-    return diff.max()
-
+# -*- coding: utf-8 -*-
 
 def get_params(t7_file):
     import torchfile

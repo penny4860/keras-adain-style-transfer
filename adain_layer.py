@@ -1,10 +1,6 @@
-
-
-import os
-from adain import PROJECT_ROOT
+# -*- coding: utf-8 -*-
 
 import tensorflow as tf
-from AdaIN import image_from_file, graph_from_t7
 from adain.encoder import vgg_encoder
 
 

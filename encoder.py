@@ -1,11 +1,11 @@
-
+# -*- coding: utf-8 -*-
 
 import os
 from adain import PROJECT_ROOT
 from adain.utils import set_params, get_params
 
 import tensorflow as tf
-from AdaIN import image_from_file, graph_from_t7
+from AdaIN import image_from_file
 
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')

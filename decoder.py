@@ -1,24 +1,15 @@
-
-
-import os
-from adain import PROJECT_ROOT
-from adain.utils import set_params, get_params
+# -*- coding: utf-8 -*-
 
 import tensorflow as tf
-from AdaIN import image_from_file, graph_from_t7
+
+from adain.encoder import SpatialReflectionPadding
+
 
 Input = tf.keras.layers.Input
 Conv2D = tf.keras.layers.Conv2D
 Model = tf.keras.models.Model
 UpSampling2D = tf.keras.layers.UpSampling2D
 
-decode_t7_file = os.path.join(PROJECT_ROOT, 'decoder.t7')
-vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
-content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
-style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
-
-
-from adain.encoder import SpatialReflectionPadding
 def decoder(input_shape=[None,None,512]):
     img_input = Input(shape=input_shape)
 
