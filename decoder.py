@@ -28,6 +28,31 @@ def decoder(input_shape=[None,None,512]):
     return model
 
 
+def get_params(t7_file):
+    import torchfile
+    t7 = torchfile.load(t7_file, force_8bytes_long=True)
+    weights = []
+    biases = []
+    for idx, module in enumerate(t7.modules):
+        weight = module.weight
+        bias = module.bias
+        if idx == 0:
+            print(bias)
+        elif weight is not None:
+            weight = weight.transpose([2,3,1,0])
+            weights.append(weight)
+            biases.append(bias)
+    return weights, biases
+
+
+def set_params(model, weights, biases):
+    i = 0
+    for layer in model.layers:
+        # assign params
+        if len(layer.get_weights()) > 0:
+            layer.set_weights([weights[i], biases[i]])
+            i += 1
+
 
 if __name__ == '__main__':
     from adain.utils import calc_diff
@@ -55,6 +80,8 @@ if __name__ == '__main__':
     from adain.encoder import load_and_preprocess_img
     model = adain_combine_model()
     decoder_model = decoder()
+    weights, biases = get_params(decode_t7_file)
+    set_params(decoder_model, weights, biases)
 
     content_input_tensor = tf.keras.layers.Input((224, 224, 3))
     style_input_tensor = tf.keras.layers.Input((224, 224, 3))
@@ -69,4 +96,10 @@ if __name__ == '__main__':
     features_keras = model.predict([content_imgs, style_imgs])
     print(features_torch.shape, features_keras.shape)
     print("scores = ", calc_diff(features_torch, features_keras))
+    
+    
+    
+
+
+
 
