@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
+import torchfile
+
+def postprocess(images):
+    # scale range
+    images = images * 256
+    # bgr -> rgb
+    images = images[:,:,:,::-1]
+    return images.astype(np.uint8)[0]
+
+
 def get_params(t7_file):
-    import torchfile
     t7 = torchfile.load(t7_file, force_8bytes_long=True)
     weights = []
     biases = []

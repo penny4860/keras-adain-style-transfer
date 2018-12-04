@@ -4,15 +4,7 @@ import os
 from adain import PROJECT_ROOT
 from adain.models import adain_style_transfer
 from adain.encoder import load_and_preprocess_img
-
-import numpy as np
-
-def postprocess(images):
-    # scale range
-    images = images * 256
-    # bgr -> rgb
-    images = images[:,:,:,::-1]
-    return images.astype(np.uint8)[0]
+from adain.utils import postprocess
     
 
 if __name__ == '__main__':
