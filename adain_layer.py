@@ -46,51 +46,7 @@ class AdaIN(tf.keras.layers.Layer):
 
 
 if __name__ == '__main__':
-    from adain.utils import calc_diff
-
-    vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
-    content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
-    style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
-
-    def run_adain_layer_from_torch(content_fname, style_fname, resize=[224,224]):
-        def AdaIN(content_features, style_features, alpha):
-            '''
-            Normalizes the `content_features` with scaling and offset from `style_features`.
-            See "5. Adaptive Instance Normalization" in https://arxiv.org/abs/1703.06868 for details.
-            '''
-            style_mean, style_variance = tf.nn.moments(style_features, [1,2], keep_dims=True)
-            content_mean, content_variance = tf.nn.moments(content_features, [1,2], keep_dims=True)
-            epsilon = 1e-5
-            normalized_content_features = tf.nn.batch_normalization(content_features, content_mean,
-                                                                    content_variance, style_mean, 
-                                                                    tf.sqrt(style_variance), epsilon)
-            normalized_content_features = alpha * normalized_content_features + (1 - alpha) * content_features
-            return normalized_content_features
-        
-        with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
-            c, c_filename = image_from_file(g, 'content_image', size=resize)
-            s, s_filename = image_from_file(g, 'style_image',size=resize)
-            _, c_vgg = graph_from_t7(c, g, vgg_t7_file)
-            _, s_vgg = graph_from_t7(s, g, vgg_t7_file)
-            c_vgg = c_vgg[30]
-            s_vgg = s_vgg[30]
-            stylized_content = AdaIN(c_vgg, s_vgg, alpha=1.0)
-            feed_dict = {c_filename: content_fname, s_filename: style_fname}
-            stylized_content = sess.run(stylized_content, feed_dict=feed_dict)
-        return stylized_content
-    
-    # 1. from torch code
-    features_torch = run_adain_layer_from_torch(content, style, [224,224])
-
-    model = adain_combine_model()
-    model.summary()
-
-    from adain.encoder import load_and_preprocess_img
-    content_imgs = load_and_preprocess_img(content, [224,224])
-    style_imgs = load_and_preprocess_img(style, [224,224])
-    features_keras = model.predict([content_imgs, style_imgs])
-    print(features_keras.shape)
-    print("scores = ", calc_diff(features_torch, features_keras))
+    pass
     
 
 

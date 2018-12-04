@@ -110,36 +110,5 @@ def vgg19(t7_file, input_shape=[224,224,3]):
 
 
 if __name__ == '__main__':
-    from adain.utils import calc_diff
-    def run_from_torch(img_fname, layer_idx, resize):
-        with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
-            c, c_filename = image_from_file(g, 'content_image', size=resize)
-            net, c_vgg = graph_from_t7(c, g, vgg_t7_file)
-            images_torch = sess.run(c_vgg[layer_idx], feed_dict = {c_filename: img_fname})
-        return images_torch
-
-    def run_from_keras(img_fname, layer_idx, resize):
-        vgg = vgg19(vgg_t7_file, [resize[0],resize[1],3])
-        images_keras = load_and_preprocess_img(img_fname, resize)
-
-        if layer_idx == 0:
-            return images_keras
-        
-        model = tf.keras.models.Model(vgg.input, vgg.layers[layer_idx].output)
-        return model.predict(images_keras)
-
-    images_torch = run_from_torch(content, layer_idx=-1, resize=[224,224])
-    images_keras = run_from_keras(content, layer_idx=-1, resize=[224,224])
-    
-    print(images_torch.shape, images_keras.shape)
-    print("difference = ", calc_diff(images_torch, images_keras))
-
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    for i in range(3):
-        plt.subplot(1, 2, 1)
-        plt.imshow(images_torch[0, :, :, i])
-        plt.subplot(1, 2, 2)
-        plt.imshow(images_keras[0, :, :, i])
-        plt.show()
+    pass
 
