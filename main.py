@@ -10,7 +10,7 @@ from adain.utils import preprocess, postprocess
 
 if __name__ == '__main__':
     content_fname = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
-    style_fname = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
+    style_fname = os.path.join(PROJECT_ROOT, 'input/style/sketch.png')
     
     # 1. contents / style images
     c_img = cv2.imread(content_fname)
