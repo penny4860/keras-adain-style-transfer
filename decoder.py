@@ -18,12 +18,12 @@ style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
 
 
 from adain.encoder import SpatialReflectionPadding
-def decoder(input_shape=[None,None,256]):
+def decoder(input_shape=[None,None,512]):
     img_input = Input(shape=input_shape)
 
     # Block 1
     x = SpatialReflectionPadding()(img_input) # layer 1
-    # x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
     model = Model(img_input, x, name='decoder')
     return model
 
@@ -41,13 +41,13 @@ if __name__ == '__main__':
             c_vgg = c_vgg[30]
             s_vgg = s_vgg[30]
             stylized_content = AdaIN(c_vgg, s_vgg, 1.0)
-            c_decoded, _ = graph_from_t7(stylized_content, g, decode_t7_file)
+            c_decoded, decodes = graph_from_t7(stylized_content, g, decode_t7_file)
             
             feed_dict = {c_filename: content, s_filename: style}
-            images_torch = sess.run(c_decoded, feed_dict=feed_dict)
+            images_torch = sess.run(decodes[2], feed_dict=feed_dict)
         return images_torch
 
-#     imgs = run_from_torch(content, style, [224,224])
+    features_torch = run_from_torch(content, style, [224,224])
 #     import matplotlib.pyplot as plt
 #     plt.imshow(imgs[0])
 #     plt.show()
@@ -67,6 +67,6 @@ if __name__ == '__main__':
     content_imgs = load_and_preprocess_img(content, [224,224])
     style_imgs = load_and_preprocess_img(style, [224,224])
     features_keras = model.predict([content_imgs, style_imgs])
-    print(features_keras.shape)
-#     print("scores = ", calc_diff(features_torch, features_keras))
+    print(features_torch.shape, features_keras.shape)
+    print("scores = ", calc_diff(features_torch, features_keras))
 
