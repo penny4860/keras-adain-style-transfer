@@ -9,7 +9,7 @@ from AdaIN import image_from_file, graph_from_t7
 Input = tf.keras.layers.Input
 Conv2D = tf.keras.layers.Conv2D
 Model = tf.keras.models.Model
-
+UpSampling2D = tf.keras.layers.UpSampling2D
 
 decode_t7_file = os.path.join(PROJECT_ROOT, 'decoder.t7')
 vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
@@ -24,6 +24,8 @@ def decoder(input_shape=[None,None,512]):
     # Block 1
     x = SpatialReflectionPadding()(img_input) # layer 1
     x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
+    x = UpSampling2D()(x)
+
     model = Model(img_input, x, name='decoder')
     return model
 
@@ -69,7 +71,7 @@ if __name__ == '__main__':
             c_decoded, decodes = graph_from_t7(stylized_content, g, decode_t7_file)
             
             feed_dict = {c_filename: content, s_filename: style}
-            images_torch = sess.run(decodes[2], feed_dict=feed_dict)
+            images_torch = sess.run(decodes[3], feed_dict=feed_dict)
         return images_torch
 
     features_torch = run_from_torch(content, style, [224,224])
@@ -96,7 +98,6 @@ if __name__ == '__main__':
     features_keras = model.predict([content_imgs, style_imgs])
     print(features_torch.shape, features_keras.shape)
     print("scores = ", calc_diff(features_torch, features_keras))
-    
     
     
 
