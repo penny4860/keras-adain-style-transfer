@@ -23,37 +23,26 @@ def vgg_encoder():
 
 def load_and_preprocess_img(img_fname, img_size=(224,224)):
     from keras.applications.vgg16 import preprocess_input
-#     import cv2
-#     import numpy as np
-#     image = cv2.imread(img_fname)
-#     image = cv2.resize(image, img_size)
-#     image = preprocess_input(image/256*255)
-#     return np.expand_dims(image, axis=0)
-    def preprocess_image(image, size=None):
-        image = tf.reverse(image, axis=[-1])
-        #image = _offset_image(image, -1*_BGR_MEANS)
-        image = tf.cast(image, tf.float32) / 256.0
-        image = tf.image.resize_images(image, size)
-        return image
-    filename = tf.placeholder(tf.string)
-    image = tf.image.decode_jpeg(tf.read_file(filename))
-    image = tf.expand_dims(image, 0)
-    image = preprocess_image(image, img_size)
-    
-    with tf.Session() as sess:
-        images = sess.run(image, feed_dict={filename: img_fname})
-        images_keras = preprocess_input(images * 255)
-        return images_keras
-
-#     with tf.Graph().as_default() as g, tf.Session(graph=g) as sess:
-#         c, c_filename = image_from_file(g, 'content_image', size=img_size)
-#          
-#         # BGR-ordered image [0, 1]-ranged
-#         images = sess.run(c, feed_dict = {c_filename: img_fname})
-#         print(images.shape)
-# 
-#     images_keras = preprocess_input(images * 255)
-#     return images_keras
+    import cv2
+    import numpy as np
+    image = cv2.imread(img_fname)
+    image = np.expand_dims(cv2.resize(image, img_size), axis=0)
+    image = preprocess_input(image)
+    return image
+#     def preprocess_image(image, size=None):
+#         image = tf.reverse(image, axis=[-1])
+#         image = tf.cast(image, tf.float32)
+#         image = tf.image.resize_images(image, size)
+#         return image
+#     filename = tf.placeholder(tf.string)
+#     image = tf.image.decode_jpeg(tf.read_file(filename))
+#     image = tf.expand_dims(image, 0)
+#     image = preprocess_image(image, img_size)
+#     
+#     with tf.Session() as sess:
+#         images = sess.run(image, feed_dict={filename: img_fname})
+#         images_keras = preprocess_input(images)
+#         return images_keras
 
 
 class SpatialReflectionPadding(tf.keras.layers.Layer):
