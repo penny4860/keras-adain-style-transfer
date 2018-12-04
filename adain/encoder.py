@@ -20,16 +20,6 @@ def vgg_encoder():
     return model
 
 
-def load_and_preprocess_img(img_fname, img_size=(224,224)):
-    from keras.applications.vgg16 import preprocess_input
-    import cv2
-    import numpy as np
-    image = cv2.imread(img_fname)
-    image = np.expand_dims(cv2.resize(image.astype(np.float32), img_size), axis=0)
-    image = preprocess_input(image)
-    return image
-
-
 class SpatialReflectionPadding(tf.keras.layers.Layer):
 
     def __init__(self, **kwargs):
