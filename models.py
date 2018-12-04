@@ -38,14 +38,10 @@ if __name__ == '__main__':
     model = adain_style_transfer()
     model.summary()
 
-    content_imgs = load_and_preprocess_img(content, [224,224])
-    style_imgs = load_and_preprocess_img(style, [224,224])
+    content_imgs = load_and_preprocess_img(content, [512,512])
+    style_imgs = load_and_preprocess_img(style, [512,512])
     stylized_imgs = model.predict([content_imgs, style_imgs])
     
-#     import matplotlib.pyplot as plt
-#     plt.imshow(stylized_imgs[0])
-#     plt.show()
-
     from adain.utils import calc_diff
     from AdaIN import AdaIN
     from AdaIN import image_from_file, graph_from_t7, postprocess_image
@@ -65,6 +61,12 @@ if __name__ == '__main__':
             images_torch = sess.run(c_decoded, feed_dict=feed_dict)
         return images_torch
 
-    stylized_torch = run_from_torch(content, style, [224,224])
+    stylized_torch = run_from_torch(content, style, [512,512])
+    stylized_imgs = stylized_imgs * 256
+    stylized_imgs = stylized_imgs[:,:,:,::-1]
     print(calc_diff(stylized_imgs, stylized_torch))
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.imshow(stylized_imgs[0].astype(np.uint8))
+    plt.show()
 
