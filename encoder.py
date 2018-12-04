@@ -2,6 +2,7 @@
 
 import os
 from adain import PROJECT_ROOT
+from adain.utils import set_params, get_params
 
 import tensorflow as tf
 from AdaIN import image_from_file, graph_from_t7
@@ -44,30 +45,6 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
 
 def vgg19(t7_file, input_shape=[224,224,3]):
     
-    def _get_params(t7_file):
-        import torchfile
-        t7 = torchfile.load(t7_file, force_8bytes_long=True)
-        weights = []
-        biases = []
-        for idx, module in enumerate(t7.modules):
-            weight = module.weight
-            bias = module.bias
-            if idx == 0:
-                print(bias)
-            elif weight is not None:
-                weight = weight.transpose([2,3,1,0])
-                weights.append(weight)
-                biases.append(bias)
-        return weights, biases
-    
-    def _set_params(model, weights, biases):
-        i = 0
-        for layer in model.layers:
-            # assign params
-            if len(layer.get_weights()) > 0:
-                layer.set_weights([weights[i], biases[i]])
-                i += 1
-
     def _build_model(input_shape):
 
         Input = tf.keras.layers.Input
@@ -126,8 +103,8 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         return model
     
     model = _build_model(input_shape)
-    weights, biases = _get_params(t7_file)
-    _set_params(model, weights, biases)
+    weights, biases = get_params(t7_file)
+    set_params(model, weights, biases)
     # model.load_weights("vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
     return model
 
