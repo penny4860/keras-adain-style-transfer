@@ -5,7 +5,6 @@ from adain import PROJECT_ROOT
 from adain.utils import set_params, get_params
 
 import tensorflow as tf
-from AdaIN import image_from_file
 
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
@@ -26,23 +25,9 @@ def load_and_preprocess_img(img_fname, img_size=(224,224)):
     import cv2
     import numpy as np
     image = cv2.imread(img_fname)
-    image = np.expand_dims(cv2.resize(image, img_size), axis=0)
+    image = np.expand_dims(cv2.resize(image.astype(np.float32), img_size), axis=0)
     image = preprocess_input(image)
     return image
-#     def preprocess_image(image, size=None):
-#         image = tf.reverse(image, axis=[-1])
-#         image = tf.cast(image, tf.float32)
-#         image = tf.image.resize_images(image, size)
-#         return image
-#     filename = tf.placeholder(tf.string)
-#     image = tf.image.decode_jpeg(tf.read_file(filename))
-#     image = tf.expand_dims(image, 0)
-#     image = preprocess_image(image, img_size)
-#     
-#     with tf.Session() as sess:
-#         images = sess.run(image, feed_dict={filename: img_fname})
-#         images_keras = preprocess_input(images)
-#         return images_keras
 
 
 class SpatialReflectionPadding(tf.keras.layers.Layer):
