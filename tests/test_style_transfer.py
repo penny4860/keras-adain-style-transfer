@@ -19,8 +19,8 @@ def test_style_transfer():
     
     true_transfer_img = np.load("stylized_imgs_truth.npy")
 
-    model = adain_style_transfer()
-    model.summary()
+    model = adain_style_transfer(alpha=1.0)
+    model.load_weights(os.path.join(PROJECT_ROOT, "adain.h5"))
 
     content_imgs = preprocess(c_img, (512,512))
     style_imgs = preprocess(s_img, (512,512))
