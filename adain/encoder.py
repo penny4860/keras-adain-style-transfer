@@ -9,8 +9,6 @@ import tensorflow as tf
 
 decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
 vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
-content = os.path.join(PROJECT_ROOT, 'input/content/modern.jpg')
-style = os.path.join(PROJECT_ROOT, 'input/style/goeritz.jpg')
 
 
 def vgg_encoder():
@@ -89,8 +87,8 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         return model
     
     model = _build_model(input_shape)
-    weights, biases = get_params(t7_file)
-    set_params(model, weights, biases)
+    # weights, biases = get_params(t7_file)
+    # set_params(model, weights, biases)
     # model.load_weights("vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
     return model
 
