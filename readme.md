@@ -1,7 +1,7 @@
 
 # keras implementation of AdaIN Style Transfer
 
-<img src="input/samples/sample.png" height="250">
+<img src="results/sample.png" height="250">
 
 
 ## Usage for python code
@@ -28,8 +28,13 @@ $ activate adain # in linux "source activate adain"
 
 ### 1. Run style transfer 
 
+Run style transfer through the following command.
 
+* ```(adain) project/root> python main.py -c input/content/brad_pitt.jpg -s input/style/sketch.png```
 
+You can see the following results:
+
+* <img src="results/brad_pitt__sketch.jpg" height="250">
 
 
 ## Copyright
