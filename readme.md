@@ -1,7 +1,8 @@
 
 # keras implementation of AdaIN Style Transfer
 
-<img src="results/sample.png" height="250">
+<img src="results/brad_pitt__sketch.jpg" height="250">
+<img src="results/brad_pitt__picasso.jpg" height="250">
 
 
 ## Usage for python code
