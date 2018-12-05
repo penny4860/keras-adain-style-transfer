@@ -22,19 +22,28 @@ argparser.add_argument(
     default="input/style/sketch.png",
     help='style image file')
 
+argparser.add_argument(
+    '-a',
+    '--alpha',
+    default=1.0,
+    type=float,
+    help='style weight')
+
+
 if __name__ == '__main__':
     
     args = argparser.parse_args()
     
     content_fname = args.contents
     style_fname = args.style
+    alpha = args.alpha
     
     # 1. contents / style images
     c_img = cv2.imread(content_fname)
     s_img = cv2.imread(style_fname)
 
-    # 2. get model    
-    model = adain_style_transfer()
+    # 2. get model
+    model = adain_style_transfer(alpha=alpha)
     
     # 3. run style transfer
     c_img_prep = preprocess(c_img, (512,512))

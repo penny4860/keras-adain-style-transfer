@@ -4,21 +4,22 @@ import tensorflow as tf
 from adain.encoder import vgg_encoder
 
 
-def adain_combine_model():
+def adain_combine_model(alpha):
     content_input_tensor = tf.keras.layers.Input((None, None, 3))
     style_input_tensor = tf.keras.layers.Input((None, None, 3))
     
     encoder = vgg_encoder()
     content_feature_maps = encoder(content_input_tensor)
     style_feature_maps = encoder(style_input_tensor)
-    combined_feature_maps = AdaIN()([content_feature_maps, style_feature_maps])
+    combined_feature_maps = AdaIN(alpha)([content_feature_maps, style_feature_maps])
 
     model = tf.keras.models.Model([content_input_tensor, style_input_tensor], combined_feature_maps)
     return model
 
 
 class AdaIN(tf.keras.layers.Layer):
-    def __init__(self, **kwargs):
+    def __init__(self, alpha=1.0, **kwargs):
+        self.alpha = alpha
         super(AdaIN, self).__init__(**kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -29,7 +30,6 @@ class AdaIN(tf.keras.layers.Layer):
     def call(self, x):
         assert isinstance(x, list)
         # Todo : args
-        alpha = 1.0
         content_features, style_features = x[0], x[1]
         style_mean, style_variance = tf.nn.moments(style_features, [1,2], keep_dims=True)
         content_mean, content_variance = tf.nn.moments(content_features, [1,2], keep_dims=True)
@@ -37,7 +37,7 @@ class AdaIN(tf.keras.layers.Layer):
         normalized_content_features = tf.nn.batch_normalization(content_features, content_mean,
                                                                 content_variance, style_mean, 
                                                                 tf.sqrt(style_variance), epsilon)
-        normalized_content_features = alpha * normalized_content_features + (1 - alpha) * content_features
+        normalized_content_features = self.alpha * normalized_content_features + (1 - self.alpha) * content_features
         return normalized_content_features
 
 

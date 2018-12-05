@@ -12,11 +12,11 @@ UpSampling2D = tf.keras.layers.UpSampling2D
 decode_t7_file = os.path.join(PROJECT_ROOT, 'decoder.t7')
 
 
-def adain_style_transfer():
+def adain_style_transfer(alpha):
     from adain.adain_layer import adain_combine_model
     from adain.decoder import decoder
 
-    model = adain_combine_model()
+    model = adain_combine_model(alpha)
     decoder_model = decoder()
     weights, biases = get_params(decode_t7_file)
     set_params(decoder_model, weights, biases)
