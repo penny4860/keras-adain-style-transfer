@@ -8,7 +8,7 @@ from adain.models import adain_style_transfer
 from adain.utils import preprocess, postprocess
 
 argparser = argparse.ArgumentParser(
-    description='test yolov3 network with coco weights')
+    description='style transfer with Adaptive Instance Normalization')
 
 argparser.add_argument(
     '-c',
