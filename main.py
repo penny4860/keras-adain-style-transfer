@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import os
 import cv2
 import argparse
+import matplotlib.pyplot as plt
 
 from adain.models import adain_style_transfer
 from adain.utils import preprocess, postprocess
@@ -43,13 +43,18 @@ if __name__ == '__main__':
     stylized_img = postprocess(stylized_imgs)
 
     # 4. plot
-    import matplotlib.pyplot as plt
     fig, ax = plt.subplots()
     plt.subplot(1, 3, 1)
+    plt.axis('off')
+    plt.title("content image")
     plt.imshow(c_img[:,:,::-1])
     plt.subplot(1, 3, 2)
+    plt.axis('off')    
+    plt.title("style image")
     plt.imshow(s_img[:,:,::-1])
     plt.subplot(1, 3, 3)
+    plt.axis('off')    
+    plt.title("stylized image")
     plt.imshow(stylized_img)
     plt.show()
 
