@@ -18,8 +18,8 @@ def adain_style_transfer(alpha):
 
     model = adain_combine_model(alpha)
     decoder_model = decoder()
-    weights, biases = get_params(decode_t7_file)
-    set_params(decoder_model, weights, biases)
+    # weights, biases = get_params(decode_t7_file)
+    # set_params(decoder_model, weights, biases)
     
     content_input_tensor = tf.keras.layers.Input((None, None, 3))
     style_input_tensor = tf.keras.layers.Input((None, None, 3))
