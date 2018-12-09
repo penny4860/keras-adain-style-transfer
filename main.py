@@ -19,7 +19,7 @@ argparser.add_argument(
 argparser.add_argument(
     '-s',
     '--style',
-    default="input/style/la_muse.jpg",
+    default="input/style/sketch.png",
     help='style image file')
 
 argparser.add_argument(
