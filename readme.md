@@ -35,7 +35,7 @@ Run style transfer through the following command.
 
 You can see the following results:
 
-* <img src="results/brad_pitt__sketch.jpg" height="250">
+* <img src="results/sketch.png" height="250">
 
 
 ## Copyright
