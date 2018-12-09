@@ -2,8 +2,9 @@
 
 import numpy as np
 import cv2
-from keras.applications.vgg16 import preprocess_input
+import tensorflow as tf
 
+preprocess_input = tf.keras.applications.vgg16.preprocess_input
 
 def preprocess(image, img_size=(224,224)):
     """
