@@ -1,13 +1,16 @@
-[![Build Status](https://travis-ci.org/penny4860/keras-adain-style-transfer?branch=master)](https://travis-ci.org/penny4860/keras-adain-style-transfer) [![codecov](https://codecov.io/gh/penny4860/keras-adain-style-transfer/branch/master/graph/badge.svg)](https://codecov.io/gh/penny4860/keras-adain-style-transfer)
+[![Build Status](https://travis-ci.org/penny4860/keras-adain-style-transfer.svg?branch=master)](https://travis-ci.org/penny4860/keras-adain-style-transfer) [![codecov](https://codecov.io/gh/penny4860/keras-adain-style-transfer/branch/master/graph/badge.svg)](https://codecov.io/gh/penny4860/keras-adain-style-transfer)
+
 
 # keras implementation of AdaIN Style Transfer
+
+Keras implementation of [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868).
 
 <img src="results/examples.png" width="500"> 
 
 
 ## Usage for python code
 
-#### 0. Requirement
+#### 1. Requirement
 
 * python 3.6
 * anaconda 5.1.0
@@ -27,7 +30,7 @@ $ activate adain # in linux "source activate adain"
 (adain) $ pip install codecov
 ```
 
-### 1. Run style transfer 
+### 2. Run style transfer 
 
 Run style transfer through the following command.
 
@@ -36,6 +39,14 @@ Run style transfer through the following command.
 You can see the following results:
 
 * <img src="results/sketch.png" height="250">
+
+
+## Pretrained weights
+
+
+This repository contains a [pretrained weight file](pretrained/adain.h5). 
+This weight file is the conversion of the torch format weight file provided in the [original project repository](https://github.com/xunhuang1995/AdaIN-style) to keras format. I used the [torchfile](https://github.com/bshillingford/python-torchfile) to read the torch format file.
+
 
 
 ## Copyright
