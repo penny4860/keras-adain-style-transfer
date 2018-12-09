@@ -2,7 +2,6 @@
 
 import os
 from adain import PROJECT_ROOT
-from adain.utils import set_params, get_params
 
 import tensorflow as tf
 
@@ -87,9 +86,6 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         return model
     
     model = _build_model(input_shape)
-    # weights, biases = get_params(t7_file)
-    # set_params(model, weights, biases)
-    # model.load_weights("vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
     return model
 
 
