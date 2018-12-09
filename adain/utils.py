@@ -17,11 +17,12 @@ def preprocess(image, img_size=(224,224)):
 
 
 def postprocess(images):
-    # scale range
-    images = images * 256
     # bgr -> rgb
     images = images[:,:,:,::-1]
-    return images.astype(np.uint8)[0]
+    images[images < 0] = 0.0
+    images[images > 1.0] = 1.0
+    images *= 255
+    return images[0].astype(np.uint8)
 
 
 def get_params(t7_file):

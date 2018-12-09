@@ -63,7 +63,7 @@ if __name__ == '__main__':
     plt.title("style image")
     plt.imshow(s_img[:,:,::-1])
     plt.subplot(1, 3, 3)
-    plt.axis('off')    
+    plt.axis('off')
     plt.title("stylized image")
     plt.imshow(stylized_img)
     plt.show()
