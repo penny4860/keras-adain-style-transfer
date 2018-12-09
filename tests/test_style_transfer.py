@@ -27,7 +27,7 @@ def test_style_transfer():
     stylized_imgs = model.predict([content_imgs, style_imgs])
     stylized_img = postprocess(stylized_imgs)
 
-    assert np.allclose(stylized_img, true_transfer_img[0].astype(np.uint8))
+    assert np.allclose(stylized_img, true_transfer_img)
 
 import pytest
 if __name__ == '__main__':
