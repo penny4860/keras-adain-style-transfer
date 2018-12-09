@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # 2. get model
     model = adain_style_transfer(alpha=alpha)
-    model.load_weights("adain.h5")
+    model.load_weights("pretrained/adain.h5")
     
     # 3. run style transfer
     c_img_prep = preprocess(c_img, (512,512))
