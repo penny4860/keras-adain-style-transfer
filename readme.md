@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/penny4860/keras-adain-style-transfer?branch=master)](https://travis-ci.org/penny4860/keras-adain-style-transfer) [![codecov](https://codecov.io/gh/penny4860/keras-adain-style-transfer/branch/master/graph/badge.svg)](https://codecov.io/gh/penny4860/keras-adain-style-transfer)
 
 # keras implementation of AdaIN Style Transfer
 
