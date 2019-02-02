@@ -61,6 +61,7 @@ def print_t7_graph(t7_file):
             print("    ", weight.shape, bias.shape)
 
 
+from tensorflow.python.framework.graph_util import convert_variables_to_constants
 def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
     """
     Freezes the state of a session into a pruned computation graph.
@@ -76,7 +77,6 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
     @param clear_devices Remove the device directives from the graph for better portability.
     @return The frozen graph definition.
     """
-    from tensorflow.python.framework.graph_util import convert_variables_to_constants
     graph = session.graph
     with graph.as_default():
         freeze_var_names = list(set(v.op.name for v in tf.global_variables()).difference(keep_var_names or []))
