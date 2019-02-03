@@ -66,6 +66,7 @@ def print_t7_graph(t7_file):
 if __name__ == '__main__':
     from adain import PROJECT_ROOT
     import os
-    print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "vgg_normalised.t7"))
+    # print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "vgg_normalised.t7"))
+    print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "decoder.t7"))
 
 
