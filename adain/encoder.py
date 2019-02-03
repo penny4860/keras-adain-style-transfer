@@ -47,10 +47,11 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         MaxPooling2D = tf.keras.layers.MaxPooling2D
         Model = tf.keras.models.Model
         
-        img_input = Input(shape=input_shape)
+        x = Input(shape=input_shape)
+        img_input = x
     
         # Block 1
-        x = VggPreprocess()(img_input)
+#         x = VggPreprocess()(x)
         x = SpatialReflectionPadding()(x) # layer 1
         x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
         x = SpatialReflectionPadding()(x)
