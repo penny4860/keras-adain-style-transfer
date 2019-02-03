@@ -4,8 +4,7 @@ import cv2
 import argparse
 import matplotlib.pyplot as plt
 
-from adain.models import adain_style_transfer
-from adain.utils import preprocess, postprocess
+from adain.utils import preprocess
 
 argparser = argparse.ArgumentParser(
     description='style transfer with Adaptive Instance Normalization')
@@ -59,7 +58,8 @@ if __name__ == '__main__':
     stylized_imgs = decoder_model.predict([c_features, s_features])
     print(stylized_imgs.shape)
     
-    stylized_img = postprocess(stylized_imgs)
+    import numpy as np
+    stylized_img = stylized_imgs[0].astype(np.uint8)
  
     # 4. plot
     fig, ax = plt.subplots()
