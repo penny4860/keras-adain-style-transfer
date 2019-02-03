@@ -35,6 +35,7 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
         super(SpatialReflectionPadding, self).__init__(**kwargs)
 
     def call(self, x):
+        # Todo: mode="REFLECT"이 없어지면 안드로이드에서 모델 로딩이 안됨. 왜????
         return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
 
 
