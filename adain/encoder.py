@@ -90,7 +90,7 @@ if __name__ == '__main__':
     from keras import backend as K
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in encoder_model.outputs])
-    tf.train.write_graph(frozen_graph, "tmp", "encoder.pb", as_text=False)
+    tf.train.write_graph(frozen_graph, "models", "encoder.pb", as_text=False)
     # input_1 / block4_conv1/Relu
     for t in encoder_model.inputs + encoder_model.outputs:
         print("op name: {}, shape: {}".format(t.op.name, t.shape))
