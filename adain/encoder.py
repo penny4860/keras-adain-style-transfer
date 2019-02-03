@@ -39,7 +39,7 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         MaxPooling2D = keras.layers.MaxPooling2D
         Model = keras.models.Model
         
-        x = Input(shape=input_shape)
+        x = Input(shape=input_shape, name="input")
         img_input = x
     
         # Block 1
@@ -61,7 +61,7 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
         
         # Block 4
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name="output")(x)
         x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
         x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
         x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in encoder_model.outputs])
     tf.train.write_graph(frozen_graph, "models", "encoder.pb", as_text=False)
-    # input_1 / block4_conv1/Relu
+    # input / output/Relu
     for t in encoder_model.inputs + encoder_model.outputs:
         print("op name: {}, shape: {}".format(t.op.name, t.shape))
 
