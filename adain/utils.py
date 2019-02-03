@@ -15,10 +15,6 @@ def preprocess(image, img_size=(224,224)):
     return image
 
 
-def postprocess(images):
-    return images[0].astype(np.uint8)
-
-
 def get_params(t7_file):
     import torchfile
     t7 = torchfile.load(t7_file, force_8bytes_long=True)
