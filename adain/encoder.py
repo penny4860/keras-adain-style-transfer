@@ -2,6 +2,7 @@
 
 import os
 from adain import PROJECT_ROOT
+from adain.utils import get_params, set_params
 
 import tensorflow as tf
 
@@ -26,7 +27,7 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
         return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), "REFLECT")
 
 
-def vgg19(t7_file, input_shape=[224,224,3]):
+def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
     
     def _build_model(input_shape):
 
@@ -86,9 +87,11 @@ def vgg19(t7_file, input_shape=[224,224,3]):
         return model
     
     model = _build_model(input_shape)
+    weights, biases = get_params(t7_file)
+    set_params(model, weights, biases)
     return model
 
 
 if __name__ == '__main__':
-    pass
-
+    model = vgg19()
+    model.summary()
