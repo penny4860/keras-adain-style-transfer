@@ -59,5 +59,13 @@ def print_t7_graph(t7_file):
         bias = module.bias
         if weight is not None:
             weight = weight.transpose([2,3,1,0])
-            print(weight.shape, bias.shape)
+            print("    ", weight.shape, bias.shape)
+
+
+
+if __name__ == '__main__':
+    from adain import PROJECT_ROOT
+    import os
+    print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "vgg_normalised.t7"))
+
 
