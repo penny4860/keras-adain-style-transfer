@@ -4,7 +4,6 @@ import tensorflow as tf
 import keras
 import os
 
-from adain.encoder import SpatialReflectionPadding
 from adain import PROJECT_ROOT
 
 t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
@@ -27,8 +26,8 @@ class PostPreprocess(keras.layers.Layer):
 
 
 def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_file):
-    c_feat_input = Input(shape=input_shape)
-    s_feat_input = Input(shape=input_shape)
+    c_feat_input = Input(shape=input_shape, name="input_c")
+    s_feat_input = Input(shape=input_shape, name="input_s")
     
     from adain.adain_layer import AdaIN
     x = AdaIN(alpha)([c_feat_input, s_feat_input])
@@ -52,7 +51,7 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
     # Block 1
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1_decode')(x)
     x = Conv2D(3, (3, 3), activation=None, padding='same', name='block1_conv2_decode')(x)
-    x = PostPreprocess()(x)
+    x = PostPreprocess(name="output")(x)
     
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
     
@@ -63,5 +62,18 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
 
 
 if __name__ == '__main__':
-    model = combine_and_decode_model(input_shape=[32,32,512], t7_file=t7_file)
+    model = combine_and_decode_model(t7_file=t7_file)
     model.summary()
+
+    # 1. to frozen pb
+    from adain.utils import freeze_session
+    from keras import backend as K
+    frozen_graph = freeze_session(K.get_session(),
+                                  output_names=[out.op.name for out in model.outputs])
+    tf.train.write_graph(frozen_graph, "models", "decoder.pb", as_text=False)
+    # input_c,input_s  / output/mul
+    for t in model.inputs + model.outputs:
+        print("op name: {}, shape: {}".format(t.op.name, t.shape))
+
+
+
