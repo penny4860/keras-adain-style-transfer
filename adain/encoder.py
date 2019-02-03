@@ -16,15 +16,6 @@ def vgg_encoder():
     # Todo : hard-coding
     model = keras.models.Model(vgg.input, vgg.layers[-9].output)
     return model
-
-
-class SpatialReflectionPadding(keras.layers.Layer):
-
-    def __init__(self, **kwargs):
-        super(SpatialReflectionPadding, self).__init__(**kwargs)
-
-    def call(self, x):
-        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), "REFLECT")
     
     
 class VggPreprocess(keras.layers.Layer):
