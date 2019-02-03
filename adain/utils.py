@@ -16,9 +16,6 @@ def preprocess(image, img_size=(224,224)):
 
 
 def postprocess(images):
-    images[images < 0] = 0.0
-    images[images > 1.0] = 1.0
-    images *= 255
     return images[0].astype(np.uint8)
 
 
