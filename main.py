@@ -67,7 +67,25 @@ if __name__ == '__main__':
         s_feat = sess.run(tensor_output, {tensor_input: s_img_prep})
         print('\n===== output predicted results =====\n')
         print(c_feat.shape, s_feat.shape)
-    
+
+
+    with tf.Session() as sess:
+        # load model from pb file
+        with gfile.FastGFile("adain/models/decoder_opt.pb",'rb') as f:
+            graph_def = tf.GraphDef()
+            graph_def.ParseFromString(f.read())
+            sess.graph.as_default()
+            g_in = tf.import_graph_def(graph_def)
+        print('\n===== ouptut operation names =====\n')
+        for op in sess.graph.get_operations():
+            print(op.name)
+        # inference by the model (op name must comes with :0 to specify the index of its output)
+        tensor_input_c = sess.graph.get_tensor_by_name('import_1/input_c:0')
+        tensor_input_s = sess.graph.get_tensor_by_name('import_1/input_s:0')
+        tensor_output = sess.graph.get_tensor_by_name('import_1/output/mul:0')
+        stylized_imgs = sess.run(tensor_output, {tensor_input_c: c_feat, tensor_input_s: s_feat})
+        print('\n===== output predicted results =====\n')
+        print(stylized_imgs.shape)
     
 #     # 1) encode images
 #     from adain.encoder import vgg_encoder
@@ -82,22 +100,22 @@ if __name__ == '__main__':
 #     stylized_imgs = decoder_model.predict([c_features, s_features])
 #     print(stylized_imgs.shape)
 #     
-#     import numpy as np
-#     stylized_img = stylized_imgs[0].astype(np.uint8)
-#  
-#     # 4. plot
-#     fig, ax = plt.subplots()
-#     plt.subplot(1, 3, 1)
-#     plt.axis('off')
-#     plt.title("content image")
-#     plt.imshow(c_img)
-#     plt.subplot(1, 3, 2)
-#     plt.axis('off')    
-#     plt.title("style image")
-#     plt.imshow(s_img)
-#     plt.subplot(1, 3, 3)
-#     plt.axis('off')
-#     plt.title("stylized image")
-#     plt.imshow(stylized_img)
-#     plt.show()
+    import numpy as np
+    stylized_img = stylized_imgs[0].astype(np.uint8)
+  
+    # 4. plot
+    fig, ax = plt.subplots()
+    plt.subplot(1, 3, 1)
+    plt.axis('off')
+    plt.title("content image")
+    plt.imshow(c_img)
+    plt.subplot(1, 3, 2)
+    plt.axis('off')    
+    plt.title("style image")
+    plt.imshow(s_img)
+    plt.subplot(1, 3, 3)
+    plt.axis('off')
+    plt.title("stylized image")
+    plt.imshow(stylized_img)
+    plt.show()
 
