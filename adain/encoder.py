@@ -24,6 +24,18 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
 
     def call(self, x):
         return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), "REFLECT")
+    
+    
+class VggPreprocess(tf.keras.layers.Layer):
+
+    def __init__(self, **kwargs):
+        super(VggPreprocess, self).__init__(**kwargs)
+
+    def call(self, x):
+        import numpy as np
+        x = tf.reverse(x, axis=[-1])
+        x = x - tf.constant(np.array([103.939, 116.779, 123.68], dtype=np.float32))
+        return x
 
 
 def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
@@ -38,7 +50,8 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         img_input = Input(shape=input_shape)
     
         # Block 1
-        x = SpatialReflectionPadding()(img_input) # layer 1
+        x = VggPreprocess()(img_input)
+        x = SpatialReflectionPadding()(x) # layer 1
         x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
         x = SpatialReflectionPadding()(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv2')(x)

@@ -12,7 +12,6 @@ def preprocess(image, img_size=(224,224)):
         image : rgb-ordered array
     """
     image = np.expand_dims(cv2.resize(image.astype(np.float32), img_size), axis=0)
-    image = preprocess_input(image)
     return image
 
 
