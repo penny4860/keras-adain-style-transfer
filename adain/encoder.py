@@ -7,8 +7,8 @@ from adain.utils import get_params, set_params
 import tensorflow as tf
 
 
-decoder_t7 = os.path.join(PROJECT_ROOT, 'decoder.t7')
-vgg_t7_file = os.path.join(PROJECT_ROOT, 'vgg_normalised.t7')
+decoder_t7 = os.path.join(PROJECT_ROOT, "pretrained", 'decoder.t7')
+vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
 
 
 def vgg_encoder():
