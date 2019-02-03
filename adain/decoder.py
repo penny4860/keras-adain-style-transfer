@@ -15,37 +15,6 @@ Model = keras.models.Model
 UpSampling2D = keras.layers.UpSampling2D
 
 
-def decoder(input_shape=[None,None,512]):
-    img_input = Input(shape=input_shape)
-
-    # Block 4
-    x = img_input
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block4_conv1_decode')(x)
-    x = UpSampling2D()(x)
-
-    # Block 3
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1_decode')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2_decode')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3_decode')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block3_conv4_decode')(x)
-    x = UpSampling2D()(x)
-
-    # Block 2
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1_decode')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block2_conv2_decode')(x)
-    x = UpSampling2D()(x)
-
-    # Block 1
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1_decode')(x)
-    x = Conv2D(3, (3, 3), activation=None, padding='same', name='block1_conv2_decode')(x)
-    
-#     x = tf.clip_by_value(x, clip_value_min=0.0, clip_value_max=1.0)
-#     x = x * 255
-    
-    model = Model(img_input, x, name='decoder')
-    return model
-
-
 # class VggPreprocess(keras.layers.Layer):
 # 
 #     def __init__(self, **kwargs):
