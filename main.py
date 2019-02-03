@@ -42,8 +42,8 @@ if __name__ == '__main__':
     s_img = cv2.imread(style_fname)[:,:,::-1]
 
     # 3. run style transfer
-    c_img_prep = preprocess(c_img, (512,512))
-    s_img_prep = preprocess(s_img, (512,512))
+    c_img_prep = preprocess(c_img, (256,256))
+    s_img_prep = preprocess(s_img, (256,256))
     
     
     
