@@ -52,7 +52,7 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         img_input = x
     
         # Block 1
-#         x = VggPreprocess()(x)
+        x = VggPreprocess()(x)
         x = SpatialReflectionPadding()(x) # layer 1
         x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
         x = SpatialReflectionPadding()(x)
