@@ -13,7 +13,7 @@ argparser = argparse.ArgumentParser(
 argparser.add_argument(
     '-c',
     '--contents',
-    default="input/content/brad_pitt.jpg",
+    default="input/content/chicago.jpg",
     help='content image file')
 
 argparser.add_argument(
