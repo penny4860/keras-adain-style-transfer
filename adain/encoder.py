@@ -11,7 +11,7 @@ vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
 
 
 def vgg_encoder():
-    vgg = vgg19(vgg_t7_file, [512,512,3])
+    vgg = vgg19(vgg_t7_file, [None,None,3])
     # Todo : hard-coding
     model = tf.keras.models.Model(vgg.input, vgg.layers[-1].output)
     return model
