@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import keras
 import os
 
 from adain import PROJECT_ROOT
@@ -9,13 +8,13 @@ from adain.encoder import SpatialReflectionPadding
 
 t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
-Input = keras.layers.Input
-Conv2D = keras.layers.Conv2D
-Model = keras.models.Model
-UpSampling2D = keras.layers.UpSampling2D
+Input = tf.keras.layers.Input
+Conv2D = tf.keras.layers.Conv2D
+Model = tf.keras.models.Model
+UpSampling2D = tf.keras.layers.UpSampling2D
 
 
-class PostPreprocess(keras.layers.Layer):
+class PostPreprocess(tf.keras.layers.Layer):
  
     def __init__(self, **kwargs):
         super(PostPreprocess, self).__init__(**kwargs)
@@ -77,7 +76,7 @@ if __name__ == '__main__':
 
     # 1. to frozen pb
     from adain.utils import freeze_session
-    from keras import backend as K
+    K = tf.keras.backend
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in model.outputs])
     tf.train.write_graph(frozen_graph, "models", "decoder.pb", as_text=False)
