@@ -42,10 +42,6 @@ if __name__ == '__main__':
     c_img = cv2.imread(content_fname)[:,:,::-1]
     s_img = cv2.imread(style_fname)[:,:,::-1]
 
-    # 2. get model
-    model = adain_style_transfer(alpha=alpha)
-    model.load_weights("pretrained/adain.h5")
-    
     # 3. run style transfer
     c_img_prep = preprocess(c_img, (512,512))
     s_img_prep = preprocess(s_img, (512,512))
