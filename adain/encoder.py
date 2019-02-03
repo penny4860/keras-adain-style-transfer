@@ -12,9 +12,9 @@ vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
 
 
 def vgg_encoder():
-    vgg = vgg19(vgg_t7_file, [None,None,3])
+    vgg = vgg19(vgg_t7_file, [512,512,3])
     # Todo : hard-coding
-    model = keras.models.Model(vgg.input, vgg.layers[-16].output)
+    model = keras.models.Model(vgg.input, vgg.layers[-9].output)
     return model
 
 
@@ -53,50 +53,34 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
     
         # Block 1
         x = VggPreprocess()(x)
-        x = SpatialReflectionPadding()(x) # layer 1
-        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv2')(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
         
         # Block 2
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv1')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv2')(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
         
         # Block 3
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv1')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv2')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv3')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv4')(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
         
         # Block 4
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block4_conv1')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block4_conv2')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block4_conv3')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block4_conv4')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
         
         # Block 5
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block5_conv1')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block5_conv2')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block5_conv3')(x)
-        x = SpatialReflectionPadding()(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name='block5_conv4')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
         model = Model(img_input, x, name='vgg19')
         return model
     
