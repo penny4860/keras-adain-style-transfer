@@ -110,9 +110,9 @@ if __name__ == '__main__':
     encoder_model = vgg_encoder()
     encoder_model.summary()
 
+    # 1. to frozen pb
     from adain.utils import freeze_session
     from keras import backend as K
-     
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in encoder_model.outputs])
     tf.train.write_graph(frozen_graph, "tmp", "encoder.pb", as_text=False)
