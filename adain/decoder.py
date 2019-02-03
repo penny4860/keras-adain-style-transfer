@@ -6,7 +6,7 @@ import os
 from adain.encoder import SpatialReflectionPadding
 from adain import PROJECT_ROOT
 
-t7_file = os.path.join(PROJECT_ROOT, "decoder.t7")
+t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
 Input = tf.keras.layers.Input
 Conv2D = tf.keras.layers.Conv2D
@@ -87,6 +87,10 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
     x = Conv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
     
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
+    
+    from adain.utils import get_params, set_params
+    weights, biases = get_params(t7_file)
+    set_params(model, weights, biases)
     return model
 
 
