@@ -9,7 +9,7 @@ preprocess_input = tf.keras.applications.vgg16.preprocess_input
 def preprocess(image, img_size=(224,224)):
     """
     # Args
-        image : bgr-ordered array
+        image : rgb-ordered array
     """
     image = np.expand_dims(cv2.resize(image.astype(np.float32), img_size), axis=0)
     image = preprocess_input(image)
@@ -17,8 +17,6 @@ def preprocess(image, img_size=(224,224)):
 
 
 def postprocess(images):
-    # bgr -> rgb
-    images = images[:,:,:,::-1]
     images[images < 0] = 0.0
     images[images > 1.0] = 1.0
     images *= 255
