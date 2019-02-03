@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import keras
 import os
 
 from adain import PROJECT_ROOT
+from adain.encoder import SpatialReflectionPadding
 
 t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
-Input = keras.layers.Input
-Conv2D = keras.layers.Conv2D
-Model = keras.models.Model
-UpSampling2D = keras.layers.UpSampling2D
+Input = tf.keras.layers.Input
+Conv2D = tf.keras.layers.Conv2D
+Model = tf.keras.models.Model
+UpSampling2D = tf.keras.layers.UpSampling2D
 
 
-class PostPreprocess(keras.layers.Layer):
+class PostPreprocess(tf.keras.layers.Layer):
  
     def __init__(self, **kwargs):
         super(PostPreprocess, self).__init__(**kwargs)
@@ -33,24 +33,33 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
     x = AdaIN(alpha)([c_feat_input, s_feat_input])
 
     # Block 4
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block4_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
     x = UpSampling2D()(x)
 
     # Block 3
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1_decode')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2_decode')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3_decode')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block3_conv4_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv3_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block3_conv4_decode')(x)
     x = UpSampling2D()(x)
 
     # Block 2
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1_decode')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block2_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block2_conv2_decode')(x)
     x = UpSampling2D()(x)
 
     # Block 1
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1_decode')(x)
-    x = Conv2D(3, (3, 3), activation=None, padding='same', name='block1_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
     x = PostPreprocess(name="output")(x)
     
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
@@ -67,7 +76,7 @@ if __name__ == '__main__':
 
     # 1. to frozen pb
     from adain.utils import freeze_session
-    from keras import backend as K
+    K = tf.keras.backend
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in model.outputs])
     tf.train.write_graph(frozen_graph, "models", "decoder.pb", as_text=False)

@@ -5,20 +5,19 @@ from adain import PROJECT_ROOT
 from adain.utils import get_params, set_params
 
 import tensorflow as tf
-import keras
 
 
 vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
 
 
 def vgg_encoder():
-    vgg = vgg19(vgg_t7_file, [512,512,3])
+    vgg = vgg19(vgg_t7_file, [None,None,3])
     # Todo : hard-coding
-    model = keras.models.Model(vgg.input, vgg.layers[-9].output)
+    model = tf.keras.models.Model(vgg.input, vgg.layers[-1].output)
     return model
     
     
-class VggPreprocess(keras.layers.Layer):
+class VggPreprocess(tf.keras.layers.Layer):
 
     def __init__(self, **kwargs):
         super(VggPreprocess, self).__init__(**kwargs)
@@ -30,48 +29,57 @@ class VggPreprocess(keras.layers.Layer):
         return x
 
 
+class SpatialReflectionPadding(tf.keras.layers.Layer):
+
+    def __init__(self, **kwargs):
+        super(SpatialReflectionPadding, self).__init__(**kwargs)
+
+    def call(self, x):
+        # Todo: mode="REFLECT"이 없어지면 안드로이드에서 모델 로딩이 안됨. 왜????
+        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
+
+
 def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
     
     def _build_model(input_shape):
 
-        Input = keras.layers.Input
-        Conv2D = keras.layers.Conv2D
-        MaxPooling2D = keras.layers.MaxPooling2D
-        Model = keras.models.Model
+        Input = tf.keras.layers.Input
+        Conv2D = tf.keras.layers.Conv2D
+        MaxPooling2D = tf.keras.layers.MaxPooling2D
+        Model = tf.keras.models.Model
         
         x = Input(shape=input_shape, name="input")
         img_input = x
     
         # Block 1
         x = VggPreprocess()(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
         
         # Block 2
-        x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
-        x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv1')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv2')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
         
         # Block 3
-        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
-        x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv1')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv2')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv3')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv4')(x)
         x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
         
         # Block 4
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name="output")(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
-        x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
-        
-        # Block 5
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
-        x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+        x = SpatialReflectionPadding()(x)
+        x = Conv2D(512, (3, 3), activation='relu', padding='valid', name="output")(x)
         model = Model(img_input, x, name='vgg19')
         return model
     
@@ -87,7 +95,7 @@ if __name__ == '__main__':
 
     # 1. to frozen pb
     from adain.utils import freeze_session
-    from keras import backend as K
+    K = tf.keras.backend
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in encoder_model.outputs])
     tf.train.write_graph(frozen_graph, "models", "encoder.pb", as_text=False)
