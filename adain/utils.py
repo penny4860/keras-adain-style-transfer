@@ -23,6 +23,23 @@ def postprocess(images):
     return images[0].astype(np.uint8)
 
 
+def get_params(t7_file):
+    import torchfile
+    t7 = torchfile.load(t7_file, force_8bytes_long=True)
+    weights = []
+    biases = []
+    for idx, module in enumerate(t7.modules):
+        weight = module.weight
+        bias = module.bias
+        if idx == 0:
+            print(bias)
+        elif weight is not None:
+            weight = weight.transpose([2,3,1,0])
+            weights.append(weight)
+            biases.append(bias)
+    return weights, biases
+
+
 def set_params(model, weights, biases):
     i = 0
     for layer in model.layers:
@@ -30,3 +47,26 @@ def set_params(model, weights, biases):
         if len(layer.get_weights()) > 0:
             layer.set_weights([weights[i], biases[i]])
             i += 1
+
+
+def print_t7_graph(t7_file):
+    import torchfile
+    t7 = torchfile.load(t7_file, force_8bytes_long=True)
+    for idx, module in enumerate(t7.modules):
+        print("{}, {}".format(idx, module._typename))
+        
+        weight = module.weight
+        bias = module.bias
+        if weight is not None:
+            weight = weight.transpose([2,3,1,0])
+            print("    ", weight.shape, bias.shape)
+
+
+
+if __name__ == '__main__':
+    from adain import PROJECT_ROOT
+    import os
+    # print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "vgg_normalised.t7"))
+    print_t7_graph(os.path.join(PROJECT_ROOT, "pretrained", "decoder.t7"))
+
+

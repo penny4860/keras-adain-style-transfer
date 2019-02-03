@@ -13,7 +13,7 @@ argparser = argparse.ArgumentParser(
 argparser.add_argument(
     '-c',
     '--contents',
-    default="input/content/brad_pitt.jpg",
+    default="input/content/chicago.jpg",
     help='content image file')
 
 argparser.add_argument(
@@ -49,9 +49,22 @@ if __name__ == '__main__':
     # 3. run style transfer
     c_img_prep = preprocess(c_img, (512,512))
     s_img_prep = preprocess(s_img, (512,512))
-    stylized_imgs = model.predict([c_img_prep, s_img_prep])
+    
+    # 1) encode images
+    from adain.encoder import vgg_encoder
+    encoder_model = vgg_encoder()
+    c_features = encoder_model.predict(c_img_prep)
+    s_features = encoder_model.predict(s_img_prep)
+    print(c_features.shape, s_features.shape)
+    
+    # 2) combine & decode
+    from adain.decoder import combine_and_decode_model
+    decoder_model = combine_and_decode_model(alpha=1.0)
+    stylized_imgs = decoder_model.predict([c_features, s_features])
+    print(stylized_imgs.shape)
+    
     stylized_img = postprocess(stylized_imgs)
-
+ 
     # 4. plot
     fig, ax = plt.subplots()
     plt.subplot(1, 3, 1)
