@@ -106,5 +106,21 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
 
 
 if __name__ == '__main__':
-    model = vgg19()
-    model.summary()
+    encoder_model = vgg_encoder()
+    encoder_model.summary()
+
+    from adain.utils import freeze_session
+    from keras import backend as K
+     
+    frozen_graph = freeze_session(K.get_session(),
+                                  output_names=[out.op.name for out in encoder_model.outputs])
+    tf.train.write_graph(frozen_graph, "tmp", "encoder.pb", as_text=False)
+    # input_1 / block4_conv1/Relu
+    for t in encoder_model.inputs + encoder_model.outputs:
+        print("op name: {}, shape: {}".format(t.op.name, t.shape))
+
+    # 2. optimize pb file
+    # python -m tensorflow.python.tools.optimize_for_inference --input encoder.pb --output encoder_opt.pb --input_names=input_1 --output_names=block4_conv1/Relu
+
+    # 3. Quantization (optional)
+
