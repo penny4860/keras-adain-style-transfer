@@ -39,8 +39,8 @@ if __name__ == '__main__':
     alpha = args.alpha
     
     # 1. contents / style images
-    c_img = cv2.imread(content_fname)
-    s_img = cv2.imread(style_fname)
+    c_img = cv2.imread(content_fname)[:,:,::-1]
+    s_img = cv2.imread(style_fname)[:,:,::-1]
 
     # 2. get model
     model = adain_style_transfer(alpha=alpha)
@@ -57,11 +57,11 @@ if __name__ == '__main__':
     plt.subplot(1, 3, 1)
     plt.axis('off')
     plt.title("content image")
-    plt.imshow(c_img[:,:,::-1])
+    plt.imshow(c_img)
     plt.subplot(1, 3, 2)
     plt.axis('off')    
     plt.title("style image")
-    plt.imshow(s_img[:,:,::-1])
+    plt.imshow(s_img)
     plt.subplot(1, 3, 3)
     plt.axis('off')
     plt.title("stylized image")
