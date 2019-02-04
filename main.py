@@ -44,7 +44,7 @@ if __name__ == '__main__':
     s_img = cv2.imread(style_fname)[:,:,::-1]
 
     # 3. run style transfer
-    c_img_prep = preprocess(c_img, (64,64))
+    c_img_prep = preprocess(c_img, (16,16))
     input_img = c_img_prep.reshape(-1,)
 
     print("Sample input image =============================================================\n")
