@@ -44,8 +44,11 @@ if __name__ == '__main__':
     # 3. run style transfer
     c_img_prep = preprocess(c_img, (16,16))
     input_img = c_img_prep.reshape(-1,)
+
+    print("Sample input image =============================================================")
     for e in input_img:
         print(e, end=", ")
+    print("=============================================================\n")
     
     # # load & inference the model ==================
     from tensorflow.python.platform import gfile
@@ -57,17 +60,15 @@ if __name__ == '__main__':
             graph_def.ParseFromString(f.read())
             sess.graph.as_default()
             g_in = tf.import_graph_def(graph_def)
-        print('\n===== ouptut operation names =====\n')
-        for op in sess.graph.get_operations():
-            print(op.name)
         # inference by the model (op name must comes with :0 to specify the index of its output)
         tensor_input = sess.graph.get_tensor_by_name('import/input:0')
         tensor_output = sess.graph.get_tensor_by_name('import/output/Relu:0')
         c_feat = sess.run(tensor_output, {tensor_input: c_img_prep})
-        s_feat = sess.run(tensor_output, {tensor_input: s_img_prep})
-        print('\n===== output predicted results =====\n')
-        print(c_feat.shape, s_feat.shape)
 
+    print("output features =============================================================")
+    for e in c_feat.reshape(-1,):
+        print(e, end=", ")
+    print("=============================================================\n")
 
     with tf.Session() as sess:
         # load model from pb file
@@ -76,16 +77,17 @@ if __name__ == '__main__':
             graph_def.ParseFromString(f.read())
             sess.graph.as_default()
             g_in = tf.import_graph_def(graph_def)
-        print('\n===== ouptut operation names =====\n')
-        for op in sess.graph.get_operations():
-            print(op.name)
         # inference by the model (op name must comes with :0 to specify the index of its output)
         tensor_input_c = sess.graph.get_tensor_by_name('import_1/input_c:0')
         tensor_input_s = sess.graph.get_tensor_by_name('import_1/input_s:0')
         tensor_output = sess.graph.get_tensor_by_name('import_1/output/mul:0')
-        stylized_imgs = sess.run(tensor_output, {tensor_input_c: c_feat, tensor_input_s: s_feat})
-        print('\n===== output predicted results =====\n')
-        print(stylized_imgs.shape)
+        stylized_imgs = sess.run(tensor_output, {tensor_input_c: c_feat, tensor_input_s: c_feat})
+
+    print("output decoded =============================================================")
+    for e in stylized_imgs.reshape(-1,):
+        print(e, end=", ")
+    print("=============================================================\n")
+
     
 #     # 1) encode images
 #     from adain.encoder import vgg_encoder
