@@ -42,10 +42,10 @@ if __name__ == '__main__':
     s_img = cv2.imread(style_fname)[:,:,::-1]
 
     # 3. run style transfer
-    c_img_prep = preprocess(c_img, (256,256))
-    s_img_prep = preprocess(s_img, (256,256))
-    
-    
+    c_img_prep = preprocess(c_img, (16,16))
+    input_img = c_img_prep.reshape(-1,)
+    for e in input_img:
+        print(e, end=", ")
     
     # # load & inference the model ==================
     from tensorflow.python.platform import gfile
