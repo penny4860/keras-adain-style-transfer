@@ -89,22 +89,77 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
     return model
 
 
+def vgg19_depthwise(input_shape=[256,256,3]):
+
+    Input = tf.keras.layers.Input
+    Conv2D = tf.keras.layers.Conv2D
+    MaxPooling2D = tf.keras.layers.MaxPooling2D
+    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+    Model = tf.keras.models.Model
+    
+    x = Input(shape=input_shape, name="input")
+    img_input = x
+
+    # Block 1
+    x = VggPreprocess()(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(64, (1, 1), activation='relu', padding='valid', name='block1_conv1')(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(64, (1, 1), activation='relu', padding='valid', name='block1_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
+    
+    # Block 2
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(128, (1, 1), activation='relu', padding='valid', name='block2_conv1')(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(128, (1, 1), activation='relu', padding='valid', name='block2_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
+    
+    # Block 3
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv1')(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv2')(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv3')(x)
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
+    
+    # Block 4
+    x = SpatialReflectionPadding()(x)
+    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = Conv2D(512, (1, 1), activation='relu', padding='valid', name="output")(x)
+    model = Model(img_input, x, name='vgg19_depthwise')
+    return model
+
+
 if __name__ == '__main__':
-    encoder_model = vgg_encoder()
-    encoder_model.summary()
+    model = vgg19()
+    light_model = vgg19_depthwise()
+    
+    model.summary()
+    light_model.summary()
+    
+    import numpy as np
+    import time
+    input_imgs = np.random.randn(1,256,256,3)
+    model.predict(input_imgs)
+    s = time.time()
+    model.predict(input_imgs)
+    e = time.time()
+    print(e-s)
 
-    # 1. to frozen pb
-    from adain.utils import freeze_session
-    K = tf.keras.backend
-    frozen_graph = freeze_session(K.get_session(),
-                                  output_names=[out.op.name for out in encoder_model.outputs])
-    tf.train.write_graph(frozen_graph, "models", "encoder.pb", as_text=False)
-    # input / output/Relu
-    for t in encoder_model.inputs + encoder_model.outputs:
-        print("op name: {}, shape: {}".format(t.op.name, t.shape))
-
-    # 2. optimize pb file
-    # python -m tensorflow.python.tools.optimize_for_inference --input encoder.pb --output encoder_opt.pb --input_names=input_1 --output_names=block4_conv1/Relu
-
-    # 3. Quantization (optional)
-
+    light_model.predict(input_imgs)
+    s = time.time()
+    light_model.predict(input_imgs)
+    e = time.time()
+    print(e-s)
