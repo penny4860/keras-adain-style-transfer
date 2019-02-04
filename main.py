@@ -48,11 +48,10 @@ if __name__ == '__main__':
     
     
     # # load & inference the model ==================
-    from tensorflow.python.platform import gfile
     import tensorflow as tf
     with tf.Session() as sess:
         # load model from pb file
-        with gfile.FastGFile("adain/models/encoder_opt.pb",'rb') as f:
+        with tf.gfile.GFile("adain/models/encoder_opt.pb",'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             sess.graph.as_default()
@@ -71,7 +70,7 @@ if __name__ == '__main__':
 
     with tf.Session() as sess:
         # load model from pb file
-        with gfile.FastGFile("adain/models/decoder_opt.pb",'rb') as f:
+        with tf.gfile.GFile("adain/models/decoder_opt.pb",'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             sess.graph.as_default()
