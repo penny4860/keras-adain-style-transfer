@@ -30,6 +30,8 @@ argparser.add_argument(
 
 
 if __name__ == '__main__':
+    import sys
+    sys.stdout = open('output.txt','w')
     
     args = argparser.parse_args()
     
@@ -45,10 +47,10 @@ if __name__ == '__main__':
     c_img_prep = preprocess(c_img, (64,64))
     input_img = c_img_prep.reshape(-1,)
 
-    print("Sample input image =============================================================")
+    print("Sample input image =============================================================\n")
     for e in input_img:
-        print(e, end=", ")
-    print("=============================================================\n")
+        print(e, end="f, ")
+    print("\n=============================================================\n")
     
     # # load & inference the model ==================
     from tensorflow.python.platform import gfile
