@@ -51,14 +51,30 @@ class Encoder(object):
 
 
 if __name__ == '__main__':
+    from adain.utils import get_params
+    from adain import PROJECT_ROOT
+    import os
+    vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
+    weights, biases = get_params(vgg_t7_file)
+    assign_dict = {"block1_conv1/weights": weights[0], "block1_conv1/biases": biases[0],
+                   "block1_conv2/weights": weights[1], "block1_conv2/biases": biases[1],
+                   "block2_conv1/weights": weights[2], "block2_conv1/biases": biases[2],
+                   "block2_conv2/weights": weights[3], "block2_conv2/biases": biases[3],
+                   "block3_conv1/weights": weights[4], "block3_conv1/biases": biases[4],
+                   "block3_conv2/weights": weights[5], "block3_conv2/biases": biases[5],
+                   "block3_conv3/weights": weights[6], "block3_conv3/biases": biases[6],
+                   "block3_conv4/weights": weights[7], "block3_conv4/biases": biases[7],
+                   "block4_conv1/weights": weights[8], "block4_conv1/biases": biases[8]}
+    
     x_pl = tf.placeholder(tf.float32, [None, 256, 256, 3])
     encoder = Encoder(x_pl)
     
     init_op = tf.global_variables_initializer()
     with tf.Session() as sess:
         sess.run(init_op)
+        assign_op, feed_dict_init = slim.assign_from_values(assign_dict)
+        sess.run(assign_op, feed_dict_init)
         features = sess.run(encoder.output, {x_pl: np.zeros((1,256,256,3))})
         print(features.shape)
-
 
 
