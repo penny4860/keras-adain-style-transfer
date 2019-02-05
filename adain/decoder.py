@@ -125,24 +125,16 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
 
 
 if __name__ == '__main__':
-    model = combine_and_decode_model(t7_file=t7_file)
-    light_model = light_model(t7_file=t7_file)
+    model = light_model(t7_file=t7_file)
     
-    import numpy as np
-    import time
-    input_imgs = np.random.randn(1,32,32,512)
-    model.predict([input_imgs, input_imgs])
-    s = time.time()
-    model.predict([input_imgs, input_imgs])
-    e = time.time()
-    print(e-s)
-
-    light_model.predict([input_imgs, input_imgs])
-    s = time.time()
-    light_model.predict([input_imgs, input_imgs])
-    e = time.time()
-    print(e-s)
-
+    from adain.utils import freeze_session
+    K = tf.keras.backend
+    frozen_graph = freeze_session(K.get_session(),
+                                  output_names=[out.op.name for out in model.outputs])
+    tf.train.write_graph(frozen_graph, "models", "light_decoder.pb", as_text=False)
+    # input_c,input_s  / output/mul
+    for t in model.inputs + model.outputs:
+        print("op name: {}, shape: {}".format(t.op.name, t.shape))
 
 
 
