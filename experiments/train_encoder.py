@@ -41,10 +41,10 @@ def _create_callbacks(saved_weights_name="mobile_encoder.h5"):
     # Make a few callbacks
     from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
     checkpoint = ModelCheckpoint(saved_weights_name, 
-                                 monitor='val_acc', 
+                                 monitor='val_loss', 
                                  verbose=1, 
                                  save_best_only=True, 
-                                 mode='max', 
+                                 mode='min', 
                                  period=1)
     callbacks = [checkpoint]
     return callbacks
@@ -52,6 +52,7 @@ def _create_callbacks(saved_weights_name="mobile_encoder.h5"):
 if __name__ == '__main__':
     # tf.keras.backend.set_session(session)
     model = vgg19_light(input_shape=[256,256,3])
+    model.load_weights("mobile_init.h5")
 
 #     light_model.summary()
     import glob
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     
     # 2. create loss function
     model.compile(loss="mean_squared_error",
-                  optimizer=tf.keras.optimizers.Adam(lr=1e-3))
+                  optimizer=tf.keras.optimizers.Adam(lr=1e-4))
     model.fit_generator(train_generator,
                         steps_per_epoch=len(train_generator),
                         callbacks=_create_callbacks(),
