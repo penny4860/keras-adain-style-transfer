@@ -12,7 +12,7 @@ Input = tf.keras.layers.Input
 Conv2D = tf.keras.layers.Conv2D
 Model = tf.keras.models.Model
 UpSampling2D = tf.keras.layers.UpSampling2D
-DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+# DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
 
 
 class PostPreprocess(tf.keras.layers.Layer):
@@ -25,6 +25,21 @@ class PostPreprocess(tf.keras.layers.Layer):
         x = x * 255
         return x
 
+# y = tf.nn.depthwise_conv2d(x, f, strides=[1, 1, 1, 1], padding="VALID", data_format="NHWC")
+
+class DepthwiseConv2D(tf.keras.layers.Layer):
+ 
+    def __init__(self, **kwargs):
+        super(DepthwiseConv2D, self).__init__(**kwargs)
+ 
+    def call(self, x):
+        x = tf.nn.depthwise_conv2d(x,
+                                   filter=[3,3,512,512],
+                                   strides=[1,1,1,1],
+                                   padding="VALID")
+        x = tf.nn.relu(x)
+        return x
+
 
 def light_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_file):
     c_feat_input = Input(shape=input_shape, name="input_c")
@@ -35,45 +50,11 @@ def light_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_file):
 
     # Block 4
     x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = DepthwiseConv2D()(x)
+    # x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
+    x = SpatialReflectionPadding()(x)
     x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block4_conv1_decode_2')(x)
     x = UpSampling2D()(x)
-
-    # Block 3
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv1_decode')(x)
-
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv2_decode')(x)
-
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(256, (1, 1), activation='relu', padding='valid', name='block3_conv3_decode')(x)
-
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(128, (1, 1), activation='relu', padding='valid', name='block3_conv4_decode')(x)
-    x = UpSampling2D()(x)
-
-    # Block 2
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(128, (1, 1), activation='relu', padding='valid', name='block2_conv1_decode')(x)
-    
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(64, (1, 1), activation='relu', padding='valid', name='block2_conv2_decode')(x)
-    x = UpSampling2D()(x)
-
-    # Block 1
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(64, (1, 1), activation='relu', padding='valid', name='block1_conv1_decode')(x)
-    x = SpatialReflectionPadding()(x)
-    x = DepthwiseConv2D((3, 3), activation='relu', padding='valid')(x)
-    x = Conv2D(3, (1, 1), activation=None, padding='valid', name='block1_conv2_decode')(x)
     x = PostPreprocess(name="output")(x)
     
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
@@ -125,26 +106,18 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
 
 
 if __name__ == '__main__':
-    model = combine_and_decode_model(t7_file=t7_file)
-    light_model = light_model(t7_file=t7_file)
+    # model = combine_and_decode_model(t7_file=t7_file)
+    model = light_model(t7_file=t7_file)
+    model.summary()
     
-    import numpy as np
-    import time
-    input_imgs = np.random.randn(1,32,32,512)
-    model.predict([input_imgs, input_imgs])
-    s = time.time()
-    model.predict([input_imgs, input_imgs])
-    e = time.time()
-    print(e-s)
-
-    light_model.predict([input_imgs, input_imgs])
-    s = time.time()
-    light_model.predict([input_imgs, input_imgs])
-    e = time.time()
-    print(e-s)
-
-
-
-
+    from adain.utils import freeze_session
+    K = tf.keras.backend
+    frozen_graph = freeze_session(K.get_session(),
+                                  output_names=[out.op.name for out in model.outputs])
+    tf.train.write_graph(frozen_graph, "models", "light_decoder.pb", as_text=False)
+    # input_c,input_s  / output/mul
+    for t in model.inputs + model.outputs:
+        print("op name: {}, shape: {}".format(t.op.name, t.shape))
+    
 
 
