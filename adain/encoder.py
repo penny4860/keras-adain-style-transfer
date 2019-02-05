@@ -165,21 +165,31 @@ def vgg19_light(input_shape=[256,256,3]):
 if __name__ == '__main__':
     model = vgg19()
     light_model = vgg19_light()
-    
-    model.summary()
-    light_model.summary()
-    
-    import numpy as np
-    import time
-    input_imgs = np.random.randn(1,256,256,3)
-    model.predict(input_imgs)
-    s = time.time()
-    model.predict(input_imgs)
-    e = time.time()
-    print(e-s)
+    mobilenet = tf.keras.applications.mobilenet.MobileNet(input_shape=(224,224,3))
+    print("======================================================")
+    conv_params = []
+    bn_params = []
+    for layer in mobilenet.layers:
+        params = layer.get_weights()
+        if len(params) == 1:
+            conv_params.append(params)
+        if len(params) == 4:
+            bn_params.append(params)
+    print("======================================================")
 
-    light_model.predict(input_imgs)
-    s = time.time()
-    light_model.predict(input_imgs)
-    e = time.time()
-    print(e-s)
+    ci = 0
+    bi = 0    
+    for layer in light_model.layers:
+        params = layer.get_weights()
+        if len(params) == 1:
+            print(layer.name, params[0].shape, conv_params[ci][0].shape)
+            layer.set_weights(conv_params[ci])
+            ci += 1
+        if len(params) == 4:
+            print(layer.name, params[0].shape, bn_params[bi][0].shape)
+            layer.set_weights(bn_params[bi])
+            bi += 1
+    print(ci, bi)
+    light_model.save_weights("mobile_init.h5")
+    
+
