@@ -51,6 +51,7 @@ class Encoder(object):
 
 
 if __name__ == '__main__':
+    from adain.utils import freeze_session
     from adain.utils import get_params
     from adain import PROJECT_ROOT
     import os
@@ -66,7 +67,7 @@ if __name__ == '__main__':
                    "block3_conv4/weights": weights[7], "block3_conv4/biases": biases[7],
                    "block4_conv1/weights": weights[8], "block4_conv1/biases": biases[8]}
     
-    x_pl = tf.placeholder(tf.float32, [None, 256, 256, 3])
+    x_pl = tf.placeholder(tf.float32, [None, 256, 256, 3], name="input")
     encoder = Encoder(x_pl)
     
     init_op = tf.global_variables_initializer()
@@ -77,4 +78,6 @@ if __name__ == '__main__':
         features = sess.run(encoder.output, {x_pl: np.zeros((1,256,256,3))})
         print(features.shape)
 
+        frozen_graph = freeze_session(sess, output_names=["block4_conv1/Relu"])
+        tf.train.write_graph(frozen_graph, "models", "encoder_slim.pb", as_text=False)
 
