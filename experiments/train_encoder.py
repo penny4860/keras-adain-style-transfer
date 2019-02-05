@@ -41,10 +41,10 @@ def _create_callbacks(saved_weights_name="mobile_encoder.h5"):
     # Make a few callbacks
     from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
     checkpoint = ModelCheckpoint(saved_weights_name, 
-                                 monitor='val_loss', 
+                                 monitor='val_acc', 
                                  verbose=1, 
                                  save_best_only=True, 
-                                 mode='min', 
+                                 mode='max', 
                                  period=1)
     callbacks = [checkpoint]
     return callbacks
