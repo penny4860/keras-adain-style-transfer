@@ -155,9 +155,16 @@ def vgg19_light(input_shape=[256,256,3]):
     x = Activateion("relu")(x)
     x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
-    x = Activateion("relu", name="output")(x)
+    x = Activateion("relu")(x)
     # (28,28,512)
-    
+
+    x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu", name="output")(x)
+
     model = Model(img_input, x, name='vgg19_light')
     return model
 
