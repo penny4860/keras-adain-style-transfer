@@ -26,7 +26,7 @@ if __name__ == '__main__':
 #     light_model.summary()
     import glob
     fnames = glob.glob(IMG_ROOT+"/*.jpg")
-    train_generator = BatchGenerator(fnames[:2], batch_size=2, truth_model=truth_encoder, shuffle=False)
+    train_generator = BatchGenerator(fnames, batch_size=2, truth_model=truth_encoder, shuffle=False)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
     
     # 2. create loss function
