@@ -8,7 +8,7 @@ from adain.encoder import vgg19_light, vgg19
 from adain.generator import BatchGenerator, create_callbacks
 
 
-IMG_ROOT = "imgs"
+IMG_ROOT = "experiments/imgs"
 
 
 if __name__ == '__main__':
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 #     light_model.summary()
     import glob
     fnames = glob.glob(IMG_ROOT+"/*.jpg")
-    train_generator = BatchGenerator(fnames[:2], batch_size=2, shuffle=False)
+    train_generator = BatchGenerator(fnames[:2], batch_size=2, truth_model=truth_encoder, shuffle=False)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
     
     # 2. create loss function
