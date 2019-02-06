@@ -3,6 +3,7 @@
 import tensorflow as tf
 import cv2
 import numpy as np
+import os
 from adain.encoder import vgg19
 
 def create_callbacks(saved_weights_name="mobile_encoder.h5"):
@@ -24,7 +25,8 @@ class BatchGenerator(tf.keras.utils.Sequence):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.input_size = input_size
-        self.truth_encoder = vgg19(input_shape=[input_size,input_size,3])
+        self.truth_encoder = vgg19(t7_file=None, input_shape=[input_size,input_size,3])
+        self.truth_encoder.load_weights(os.path.join(os.path.dirname(__file__), "models", "vgg_encoder"))
         self.truth_encoder.predict(np.zeros((1,input_size,input_size,3)))
         self.on_epoch_end()
 
