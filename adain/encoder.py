@@ -84,8 +84,9 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         return model
     
     model = _build_model(input_shape)
-    weights, biases = get_params(t7_file)
-    set_params(model, weights, biases)
+    if t7_file:
+        weights, biases = get_params(t7_file)
+        set_params(model, weights, biases)
     return model
 
 
