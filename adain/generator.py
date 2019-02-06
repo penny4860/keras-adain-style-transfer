@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from adain.encoder import vgg19
 
-def _create_callbacks(saved_weights_name="mobile_encoder.h5"):
+def create_callbacks(saved_weights_name="mobile_encoder.h5"):
     # Make a few callbacks
     from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
     checkpoint = ModelCheckpoint(saved_weights_name, 
