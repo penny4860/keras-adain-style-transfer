@@ -3,18 +3,16 @@
 import tensorflow as tf
 import cv2
 import numpy as np
-import os
-from adain.encoder import vgg19
 
 def create_callbacks(saved_weights_name="mobile_encoder.h5"):
     # Make a few callbacks
-    from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-    checkpoint = ModelCheckpoint(saved_weights_name, 
-                                 monitor='val_loss', 
-                                 verbose=1, 
-                                 save_best_only=True, 
-                                 mode='min', 
-                                 period=1)
+    # from tf.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(saved_weights_name, 
+                                                    monitor='val_loss', 
+                                                    verbose=1, 
+                                                    save_best_only=True, 
+                                                    mode='min', 
+                                                    period=1)
     callbacks = [checkpoint]
     return callbacks
 
