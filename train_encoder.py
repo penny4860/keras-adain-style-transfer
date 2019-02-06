@@ -18,15 +18,10 @@ if __name__ == '__main__':
     model.load_weights("experiments/mobile_encoder.h5", by_name=True)
     truth_encoder = vgg19(t7_file=None, input_shape=[input_size,input_size,3])
     truth_encoder.load_weights(os.path.join("adain", "models", "vgg_encoder.h5"))
-
     
-#     for l in model.layers[:-6]:
-#         l.trainable = False
-
-#     light_model.summary()
     import glob
     fnames = glob.glob(IMG_ROOT+"/*.jpg")
-    train_generator = BatchGenerator(fnames, batch_size=2, truth_model=truth_encoder, shuffle=False)
+    train_generator = BatchGenerator(fnames, batch_size=16, truth_model=truth_encoder, shuffle=False)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
     
     # 2. create loss function
