@@ -21,6 +21,7 @@ if __name__ == '__main__':
     
     import glob
     fnames = glob.glob(IMG_ROOT+"/*.jpg")
+    print(len(fnames))
     train_generator = BatchGenerator(fnames, batch_size=8, truth_model=truth_encoder, shuffle=False)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
     
