@@ -9,7 +9,7 @@ from adain.encoder import vgg19_light, vgg19
 from adain.generator import BatchGenerator, create_callbacks
 
 
-DEFAULT_IMG_ROOT = "experiments/imgs"
+DEFAULT_IMG_ROOT = "experiments/small-imgs"
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_LEARNING_RATE = 0.01
 DEFAULT_INIT_WEIGHTS = "experiments/mobile_encoder.h5"
@@ -25,7 +25,6 @@ argparser.add_argument('-i',
 argparser.add_argument('-w',
                        '--weights_init',
                        default=DEFAULT_INIT_WEIGHTS,
-                       type=float,
                        help='learning rate')
 argparser.add_argument('-b',
                        '--batch_size',
