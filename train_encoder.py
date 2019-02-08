@@ -9,7 +9,7 @@ from adain.encoder import vgg19_light, vgg19
 from adain.generator import BatchGenerator, create_callbacks
 
 
-DEFAULT_IMG_ROOT = "experiments/small-imgs"
+DEFAULT_IMG_ROOT = "experiments/small_imgs"
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_LEARNING_RATE = 0.01
 DEFAULT_INIT_WEIGHTS = "experiments/mobile_encoder.h5"
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     fnames = glob.glob(args.image_root + "/*.jpg")
     print("{}-files to train".format(len(fnames)))
     train_generator = BatchGenerator(fnames,
-                                     batch_size=args.batch_size,
+                                     batch_size=min(args.batch_size, len(fnames)),
                                      truth_model=truth_encoder,
                                      shuffle=False)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
