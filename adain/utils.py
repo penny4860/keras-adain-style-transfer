@@ -40,6 +40,23 @@ def set_params(model, weights, biases):
             layer.set_weights([weights[i], biases[i]])
             i += 1
 
+def plot(imgs):
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    plt.subplot(1, 3, 1)
+    plt.axis('off')
+    plt.title("content image")
+    plt.imshow(imgs[0])
+    plt.subplot(1, 3, 2)
+    plt.axis('off')    
+    plt.title("style image")
+    plt.imshow(imgs[1])
+    plt.subplot(1, 3, 3)
+    plt.axis('off')
+    plt.title("stylized image")
+    plt.imshow(imgs[2])
+    plt.show()
+
 
 def print_t7_graph(t7_file):
     import torchfile

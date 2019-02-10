@@ -3,10 +3,9 @@
 import numpy as np
 import cv2
 import argparse
-import matplotlib.pyplot as plt
 import os
 
-from adain.utils import preprocess
+from adain.utils import preprocess, plot
 from adain.graph import load_graph_from_pb
 from adain import MODEL_ROOT
 
@@ -81,18 +80,4 @@ if __name__ == '__main__':
     stylized_img = stylized_imgs[0].astype(np.uint8)
    
     # 5. plot
-    fig, ax = plt.subplots()
-    plt.subplot(1, 3, 1)
-    plt.axis('off')
-    plt.title("content image")
-    plt.imshow(c_img)
-    plt.subplot(1, 3, 2)
-    plt.axis('off')    
-    plt.title("style image")
-    plt.imshow(s_img)
-    plt.subplot(1, 3, 3)
-    plt.axis('off')
-    plt.title("stylized image")
-    plt.imshow(stylized_img)
-    plt.show()
-
+    plot([c_img, s_img, stylized_img])
