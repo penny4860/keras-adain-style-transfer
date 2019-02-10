@@ -5,9 +5,9 @@ if __name__ == '__main__':
     from adain.encoder import vgg19_light
     # encoder_model = vgg_encoder()
     model = vgg19_light()
-    model.load_weights("../mobile_encoder.h5")
+    model.load_weights("../mobile_encoder.h5", by_name=False)
     model.summary()
-
+        
     # 1. to frozen pb
     from adain.utils import freeze_session
     K = tf.keras.backend
