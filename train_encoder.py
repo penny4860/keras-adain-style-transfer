@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
     input_size = 256
     model = vgg19_light(input_shape=[input_size,input_size,3])
-    # model.load_weights("mobile_encoder.h5", by_name=True)
+    model.load_weights("mobile_encoder.h5", by_name=True)
     truth_encoder = vgg19(t7_file=None, input_shape=[input_size,input_size,3])
     truth_encoder.load_weights(DEFAULT_VGG_WEIGHTS)
     
