@@ -1,5 +1,6 @@
 
 import tensorflow as tf
+from adain.graph import freeze_session
 
 if __name__ == '__main__':
     from adain.encoder import vgg19_light
@@ -9,7 +10,6 @@ if __name__ == '__main__':
     model.summary()
         
     # 1. to frozen pb
-    from adain.utils import freeze_session
     K = tf.keras.backend
     frozen_graph = freeze_session(K.get_session(),
                                   output_names=[out.op.name for out in model.outputs])
