@@ -38,8 +38,7 @@ class BatchGenerator(tf.keras.utils.Sequence):
         batch_fnames = self.fnames[idx*self.batch_size: (idx+1)*self.batch_size]
         xs = [cv2.imread(fname)[:,:,::-1] for fname in batch_fnames]
         xs = np.array([cv2.resize(img, (self.input_size,self.input_size)) for img in xs])
-        ys = np.zeros((len(xs), 32, 32, 512))
-        # ys = self.truth_model.predict(xs)
+        ys = self.truth_model.predict(xs)
         return xs, ys
 
     def on_epoch_end(self):
