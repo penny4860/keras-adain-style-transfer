@@ -10,7 +10,7 @@ from adain.utils import preprocess
 from adain.graph import load_graph_from_pb
 from adain import MODEL_ROOT
 
-DEFAULT_ENCODER_PB = os.path.join(MODEL_ROOT, "encoder_opt.pb")
+DEFAULT_ENCODER_PB = os.path.join(MODEL_ROOT, "mobile_encoder_opt.pb")
 DEFAULT_DECODER_PB = os.path.join(MODEL_ROOT, "decoder_opt.pb")
 
 
