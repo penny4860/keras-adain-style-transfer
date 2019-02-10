@@ -18,4 +18,5 @@ if __name__ == '__main__':
     for t in model.inputs + model.outputs:
         print("op name: {}, shape: {}".format(t.op.name, t.shape))
 
+    # python -m tensorflow.python.tools.optimize_for_inference --input encoder.pb --output mobile_encoder_opt.pb --input_names=input --output_names=output/Relu
 
