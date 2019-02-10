@@ -110,7 +110,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (112,112,32)
 
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -118,7 +118,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (112,112,64)
 
     x = DepthwiseConv2D((3, 3), strides=2, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     # (56,56,64)
     x = Conv2D(128, (1, 1), strides=1, use_bias=False, padding='same')(x)
@@ -127,7 +127,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (56,56,128)
 
     x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     x = Conv2D(128, (1, 1), strides=1, use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -135,7 +135,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (56,56,128)
 
     x = DepthwiseConv2D((3, 3), strides=2, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     # (28,28,128)
     x = Conv2D(256, (1, 1), strides=1, use_bias=False, padding='same')(x)
@@ -144,7 +144,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (28,28,256)
 
     x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     x = Conv2D(256, (1, 1), strides=1, use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -152,7 +152,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (28,28,256)
 
     x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -160,7 +160,7 @@ def vgg19_light(input_shape=[256,256,3]):
     # (28,28,512)
 
     x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
+    x = BatchNormalization(fused=False)(x)
     x = Activateion("relu")(x)
     x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
