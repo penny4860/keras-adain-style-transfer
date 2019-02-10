@@ -74,15 +74,3 @@ if __name__ == '__main__':
     model = combine_and_decode_model(t7_file=t7_file)
     model.summary()
 
-    # 1. to frozen pb
-    from adain.utils import freeze_session
-    K = tf.keras.backend
-    frozen_graph = freeze_session(K.get_session(),
-                                  output_names=[out.op.name for out in model.outputs])
-    tf.train.write_graph(frozen_graph, "models", "decoder.pb", as_text=False)
-    # input_c,input_s  / output/mul
-    for t in model.inputs + model.outputs:
-        print("op name: {}, shape: {}".format(t.op.name, t.shape))
-
-
-

@@ -84,27 +84,120 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         return model
     
     model = _build_model(input_shape)
-    weights, biases = get_params(t7_file)
-    set_params(model, weights, biases)
+    if t7_file:
+        weights, biases = get_params(t7_file)
+        set_params(model, weights, biases)
+    return model
+
+
+def vgg19_light(input_shape=[256,256,3]):
+
+    Input = tf.keras.layers.Input
+    Conv2D = tf.keras.layers.Conv2D
+    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+    Model = tf.keras.models.Model
+    BatchNormalization = tf.keras.layers.BatchNormalization
+    Activateion = tf.keras.layers.Activation
+    
+    x = Input(shape=input_shape, name="input")
+    img_input = x
+
+    # Block 1
+    x = VggPreprocess()(x)
+    x = Conv2D(32, (3, 3), strides=2, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (112,112,32)
+
+    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (112,112,64)
+
+    x = DepthwiseConv2D((3, 3), strides=2, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    # (56,56,64)
+    x = Conv2D(128, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (56,56,128)
+
+    x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(128, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (56,56,128)
+
+    x = DepthwiseConv2D((3, 3), strides=2, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    # (28,28,128)
+    x = Conv2D(256, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (28,28,256)
+
+    x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(256, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (28,28,256)
+
+    x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu")(x)
+    # (28,28,512)
+
+    x = DepthwiseConv2D((3, 3), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization(fused=False)(x)
+    x = Activateion("relu")(x)
+    x = Conv2D(512, (1, 1), strides=1, use_bias=False, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activateion("relu", name="output")(x)
+
+    model = Model(img_input, x, name='vgg19_light')
     return model
 
 
 if __name__ == '__main__':
-    encoder_model = vgg_encoder()
-    encoder_model.summary()
+    model = vgg19()
+    light_model = vgg19_light()
+    mobilenet = tf.keras.applications.mobilenet.MobileNet(input_shape=(224,224,3))
+    print("======================================================")
+    conv_params = []
+    bn_params = []
+    for layer in mobilenet.layers:
+        params = layer.get_weights()
+        if len(params) == 1:
+            conv_params.append(params)
+        if len(params) == 4:
+            bn_params.append(params)
+    print("======================================================")
 
-    # 1. to frozen pb
-    from adain.utils import freeze_session
-    K = tf.keras.backend
-    frozen_graph = freeze_session(K.get_session(),
-                                  output_names=[out.op.name for out in encoder_model.outputs])
-    tf.train.write_graph(frozen_graph, "models", "encoder.pb", as_text=False)
-    # input / output/Relu
-    for t in encoder_model.inputs + encoder_model.outputs:
-        print("op name: {}, shape: {}".format(t.op.name, t.shape))
-
-    # 2. optimize pb file
-    # python -m tensorflow.python.tools.optimize_for_inference --input encoder.pb --output encoder_opt.pb --input_names=input_1 --output_names=block4_conv1/Relu
-
-    # 3. Quantization (optional)
+    ci = 0
+    bi = 0    
+    for layer in light_model.layers:
+        params = layer.get_weights()
+        if len(params) == 1:
+            print(layer.name, params[0].shape, conv_params[ci][0].shape)
+            layer.set_weights(conv_params[ci])
+            ci += 1
+        if len(params) == 4:
+            print(layer.name, params[0].shape, bn_params[bi][0].shape)
+            layer.set_weights(bn_params[bi])
+            bi += 1
+    print(ci, bi)
+    light_model.save_weights("mobile_init.h5")
+    
 
