@@ -14,8 +14,31 @@ def create_callbacks(saved_weights_name="mobile_encoder.h5"):
                                                     save_best_only=True, 
                                                     mode='min', 
                                                     period=1)
+    
+    tensorboard_callback = keras.callbacks.TensorBoard(
+            histogram_freq         = 0,
+            write_graph            = True,
+            write_grads            = False,
+            write_images           = False,
+            embeddings_freq        = 0,
+            embeddings_layer_names = None,
+            embeddings_metadata    = None
+        )
     callbacks = [checkpoint]
+    callbacks.append(tensorboard_callback)
+    callbacks.append(keras.callbacks.ReduceLROnPlateau(
+        monitor    = 'loss',
+        factor     = 0.1,
+        patience   = 2,
+        verbose    = 1,
+        mode       = 'auto',
+        min_delta  = 0.0001,
+        cooldown   = 0,
+        min_lr     = 0
+    ))
     return callbacks
+
+
 
 
 class BatchGenerator(keras.utils.Sequence):
