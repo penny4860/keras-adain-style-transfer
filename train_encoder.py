@@ -1,9 +1,11 @@
 
 # import modules
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 import os
 import glob
+import keras
+
 np.random.seed(1337)
 from adain.encoder import vgg19_light, vgg19
 from adain.generator import BatchGenerator, create_callbacks
@@ -43,7 +45,7 @@ if __name__ == '__main__':
     
     input_size = 256
     model = vgg19_light(input_shape=[input_size,input_size,3])
-    model.load_weights("experiments/mobile_encoder.h5", by_name=True)
+    # model.load_weights("experiments/mobile_encoder.h5", by_name=True)
     truth_encoder = vgg19(t7_file=None, input_shape=[input_size,input_size,3])
     truth_encoder.load_weights(DEFAULT_VGG_WEIGHTS)
     
@@ -57,7 +59,7 @@ if __name__ == '__main__':
     
     # 2. create loss function
     model.compile(loss="mean_squared_error",
-                  optimizer=tf.keras.optimizers.Adam(lr=args.learning_rate))
+                  optimizer=keras.optimizers.Adam(lr=args.learning_rate))
     model.fit_generator(train_generator,
                         steps_per_epoch=len(train_generator),
                         callbacks=create_callbacks(),

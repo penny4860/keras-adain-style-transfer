@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
+# import tensorflow as tf
 import cv2
 import numpy as np
+import keras
 
 def create_callbacks(saved_weights_name="mobile_encoder.h5"):
     # Make a few callbacks
     # from tf.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-    checkpoint = tf.keras.callbacks.ModelCheckpoint(saved_weights_name, 
+    checkpoint = keras.callbacks.ModelCheckpoint(saved_weights_name, 
                                                     monitor='val_loss', 
                                                     verbose=1, 
                                                     save_best_only=True, 
@@ -17,7 +18,7 @@ def create_callbacks(saved_weights_name="mobile_encoder.h5"):
     return callbacks
 
 
-class BatchGenerator(tf.keras.utils.Sequence):
+class BatchGenerator(keras.utils.Sequence):
     def __init__(self, fnames, batch_size, shuffle, truth_model, input_size=256):
         self.fnames = fnames
         self.batch_size = batch_size
