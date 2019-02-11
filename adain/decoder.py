@@ -5,7 +5,8 @@ import keras
 import os
 
 from adain import PROJECT_ROOT, USE_TF_KERAS
-from adain.encoder import SpatialReflectionPadding
+from adain.layers import PostPreprocess, SpatialReflectionPadding, AdaIN
+
 
 t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
@@ -27,7 +28,6 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
     c_feat_input = Input(shape=input_shape, name="input_c")
     s_feat_input = Input(shape=input_shape, name="input_s")
     
-    from adain.adain_layer import AdaIN
     x = AdaIN(alpha)([c_feat_input, s_feat_input])
 
     # Block 4
