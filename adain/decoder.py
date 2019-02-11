@@ -21,12 +21,11 @@ else:
     Layer = keras.layers.Layer
 
 
-def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0):
-    c_feat_input = Input(shape=input_shape, name="input_c")
-    s_feat_input = Input(shape=input_shape, name="input_s")
+def build_decoder(input_features):
     
-    x = AdaIN(alpha)([c_feat_input, s_feat_input])
-
+    # (32,32,512)
+    x = input_features
+    
     # Block 4
     x = SpatialReflectionPadding()(x)
     x = Conv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
@@ -56,7 +55,16 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0):
     x = SpatialReflectionPadding()(x)
     x = Conv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
     x = PostPreprocess(name="output")(x)
+    return x
+
+
+def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0):
+    c_feat_input = Input(shape=input_shape, name="input_c")
+    s_feat_input = Input(shape=input_shape, name="input_s")
     
+    x = AdaIN(alpha)([c_feat_input, s_feat_input])
+    x = build_decoder(x)
+
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
     return model
 
