@@ -70,7 +70,7 @@ if __name__ == '__main__':
                   optimizer=keras.optimizers.Adam(lr=args.learning_rate))
     model.fit_generator(train_generator,
                         steps_per_epoch=len(train_generator),
-                        callbacks=create_callbacks(),
+                        callbacks=create_callbacks(saved_weights_name="mobile_decoder.h5"),
                         validation_data  = train_generator,
                         validation_steps = len(train_generator),
                         epochs=1000)
