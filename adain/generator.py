@@ -1,21 +1,33 @@
 # -*- coding: utf-8 -*-
 
-# import tensorflow as tf
 import cv2
 import numpy as np
-import keras
+
+from adain import USE_TF_KERAS
+
+if USE_TF_KERAS:
+    import tensorflow as tf
+    ModelCheckpoint = tf.keras.callbacks.ModelCheckpoint
+    TensorBoard = tf.keras.callbacks.TensorBoard
+    ReduceLROnPlateau = tf.keras.callbacks.ReduceLROnPlateau
+    Sequence = tf.keras.utils.Sequence
+else:
+    import keras
+    ModelCheckpoint = keras.callbacks.ModelCheckpoint
+    TensorBoard = keras.callbacks.TensorBoard
+    ReduceLROnPlateau = keras.callbacks.ReduceLROnPlateau
+    Sequence = keras.utils.Sequence
+
 
 def create_callbacks(saved_weights_name="mobile_encoder.h5"):
-    # Make a few callbacks
-    # from tf.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-    checkpoint = keras.callbacks.ModelCheckpoint(saved_weights_name, 
+    checkpoint = ModelCheckpoint(saved_weights_name, 
                                                     monitor='val_loss', 
                                                     verbose=1, 
                                                     save_best_only=True, 
                                                     mode='min', 
                                                     period=1)
     
-    tensorboard_callback = keras.callbacks.TensorBoard(
+    tensorboard_callback = TensorBoard(
             histogram_freq         = 0,
             write_graph            = True,
             write_grads            = False,
@@ -26,7 +38,7 @@ def create_callbacks(saved_weights_name="mobile_encoder.h5"):
         )
     callbacks = [checkpoint]
     callbacks.append(tensorboard_callback)
-    callbacks.append(keras.callbacks.ReduceLROnPlateau(
+    callbacks.append(ReduceLROnPlateau(
         monitor    = 'loss',
         factor     = 0.1,
         patience   = 2,
@@ -41,7 +53,7 @@ def create_callbacks(saved_weights_name="mobile_encoder.h5"):
 
 
 
-class BatchGenerator(keras.utils.Sequence):
+class BatchGenerator(Sequence):
     def __init__(self, fnames, batch_size, shuffle, truth_model, input_size=256):
         self.fnames = fnames
         self.batch_size = batch_size
