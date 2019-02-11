@@ -26,9 +26,9 @@ if __name__ == '__main__':
     s_img_prep = preprocess(s_img, (256,256))
     
     # 3. encoding
-    from adain.encoder import vgg19_light
+    from adain.encoder import mobile_encoder
     from adain.decoder import combine_and_decode_model
-    encoder = vgg19_light()
+    encoder = mobile_encoder()
     decoder = combine_and_decode_model()
     encoder.load_weights(DEFAULT_ENCODER_H5)
     decoder.load_weights(DEFAULT_DECODER_H5)
