@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
-from adain import PROJECT_ROOT, USE_TF_KERAS
-from adain.utils import get_params, set_params
-
 import tensorflow as tf
 import keras
+
+from adain import USE_TF_KERAS
+from adain.layers import VggPreprocess, SpatialReflectionPadding
 
 if USE_TF_KERAS:
     Input = tf.keras.layers.Input
@@ -27,42 +26,9 @@ else:
     Model = keras.models.Model
 
 
-vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
-
-
-def vgg_encoder():
-    vgg = vgg19(vgg_t7_file, [None,None,3])
-    # Todo : hard-coding
-    model = Model(vgg.input, vgg.layers[-1].output)
-    return model
-    
-    
-class VggPreprocess(Layer):
-
-    def __init__(self, **kwargs):
-        super(VggPreprocess, self).__init__(**kwargs)
-
-    def call(self, x):
-        import numpy as np
-        x = tf.reverse(x, axis=[-1])
-        x = x - tf.constant(np.array([103.939, 116.779, 123.68], dtype=np.float32))
-        return x
-
-
-class SpatialReflectionPadding(Layer):
-
-    def __init__(self, **kwargs):
-        super(SpatialReflectionPadding, self).__init__(**kwargs)
-
-    def call(self, x):
-        # Todo: mode="REFLECT"이 없어지면 안드로이드에서 모델 로딩이 안됨. 왜????
-        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
-
-
-def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
+def vgg_encoder(input_shape=[None,None,3]):
     
     def _build_model(input_shape):
-        
         x = Input(shape=input_shape, name="input")
         img_input = x
     
@@ -97,15 +63,11 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
         x = Conv2D(512, (3, 3), activation='relu', padding='valid', name="output")(x)
         model = Model(img_input, x, name='vgg19')
         return model
-    
     model = _build_model(input_shape)
-    if t7_file:
-        weights, biases = get_params(t7_file)
-        set_params(model, weights, biases)
     return model
 
 
-def vgg19_light(input_shape=[256,256,3]):
+def mobile_encoder(input_shape=[None,None,3]):
     
     x = Input(shape=input_shape, name="input")
     img_input = x
@@ -179,8 +141,8 @@ def vgg19_light(input_shape=[256,256,3]):
 
 
 if __name__ == '__main__':
-    model = vgg19()
-    light_model = vgg19_light()
+    model = vgg_encoder()
+    light_model = mobile_encoder()
     mobilenet = tf.keras.applications.mobilenet.MobileNet(input_shape=(224,224,3))
     print("======================================================")
     conv_params = []

@@ -2,12 +2,10 @@
 
 import tensorflow as tf
 import keras
-import os
 
-from adain import PROJECT_ROOT, USE_TF_KERAS
-from adain.encoder import SpatialReflectionPadding
+from adain import USE_TF_KERAS
+from adain.layers import PostPreprocess, SpatialReflectionPadding, AdaIN
 
-t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
 if USE_TF_KERAS:
     Input = tf.keras.layers.Input
@@ -23,22 +21,10 @@ else:
     Layer = keras.layers.Layer
 
 
-class PostPreprocess(Layer):
- 
-    def __init__(self, **kwargs):
-        super(PostPreprocess, self).__init__(**kwargs)
- 
-    def call(self, x):
-        x = tf.clip_by_value(x, clip_value_min=0.0, clip_value_max=1.0)
-        x = x * 255
-        return x
-
-
-def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_file):
+def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0):
     c_feat_input = Input(shape=input_shape, name="input_c")
     s_feat_input = Input(shape=input_shape, name="input_s")
     
-    from adain.adain_layer import AdaIN
     x = AdaIN(alpha)([c_feat_input, s_feat_input])
 
     # Block 4
@@ -72,14 +58,10 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_
     x = PostPreprocess(name="output")(x)
     
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
-    
-    from adain.utils import get_params, set_params
-    weights, biases = get_params(t7_file)
-    set_params(model, weights, biases)
     return model
 
 
 if __name__ == '__main__':
-    model = combine_and_decode_model(t7_file=t7_file)
+    model = combine_and_decode_model()
     model.summary()
 
