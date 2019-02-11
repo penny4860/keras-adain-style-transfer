@@ -1,20 +1,29 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import keras
 import os
 
-from adain import PROJECT_ROOT
+from adain import PROJECT_ROOT, USE_TF_KERAS
 from adain.encoder import SpatialReflectionPadding
 
 t7_file = os.path.join(PROJECT_ROOT, "pretrained/decoder-content-similar.t7")
 
-Input = tf.keras.layers.Input
-Conv2D = tf.keras.layers.Conv2D
-Model = tf.keras.models.Model
-UpSampling2D = tf.keras.layers.UpSampling2D
+if USE_TF_KERAS:
+    Input = tf.keras.layers.Input
+    Conv2D = tf.keras.layers.Conv2D
+    Model = tf.keras.models.Model
+    UpSampling2D = tf.keras.layers.UpSampling2D
+    Layer = tf.keras.layers.Layer
+else:
+    Input = keras.layers.Input
+    Conv2D = keras.layers.Conv2D
+    Model = keras.models.Model
+    UpSampling2D = keras.layers.UpSampling2D
+    Layer = keras.layers.Layer
 
 
-class PostPreprocess(tf.keras.layers.Layer):
+class PostPreprocess(Layer):
  
     def __init__(self, **kwargs):
         super(PostPreprocess, self).__init__(**kwargs)

@@ -1,10 +1,30 @@
 # -*- coding: utf-8 -*-
 
 import os
-from adain import PROJECT_ROOT
+from adain import PROJECT_ROOT, USE_TF_KERAS
 from adain.utils import get_params, set_params
 
 import tensorflow as tf
+import keras
+
+if USE_TF_KERAS:
+    Input = tf.keras.layers.Input
+    Conv2D = tf.keras.layers.Conv2D
+    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+    BatchNormalization = tf.keras.layers.BatchNormalization
+    Activateion = tf.keras.layers.Activation
+    MaxPooling2D = tf.keras.layers.MaxPooling2D
+    Layer = tf.keras.layers.Layer
+    Model = tf.keras.models.Model
+else:
+    Input = keras.layers.Input
+    Conv2D = keras.layers.Conv2D
+    DepthwiseConv2D = keras.layers.DepthwiseConv2D
+    BatchNormalization = keras.layers.BatchNormalization
+    Activateion = keras.layers.Activation
+    MaxPooling2D = keras.layers.MaxPooling2D
+    Layer = keras.layers.Layer
+    Model = keras.models.Model
 
 
 vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
@@ -13,11 +33,11 @@ vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
 def vgg_encoder():
     vgg = vgg19(vgg_t7_file, [None,None,3])
     # Todo : hard-coding
-    model = tf.keras.models.Model(vgg.input, vgg.layers[-1].output)
+    model = Model(vgg.input, vgg.layers[-1].output)
     return model
     
     
-class VggPreprocess(tf.keras.layers.Layer):
+class VggPreprocess(Layer):
 
     def __init__(self, **kwargs):
         super(VggPreprocess, self).__init__(**kwargs)
@@ -29,7 +49,7 @@ class VggPreprocess(tf.keras.layers.Layer):
         return x
 
 
-class SpatialReflectionPadding(tf.keras.layers.Layer):
+class SpatialReflectionPadding(Layer):
 
     def __init__(self, **kwargs):
         super(SpatialReflectionPadding, self).__init__(**kwargs)
@@ -42,11 +62,6 @@ class SpatialReflectionPadding(tf.keras.layers.Layer):
 def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
     
     def _build_model(input_shape):
-
-        Input = tf.keras.layers.Input
-        Conv2D = tf.keras.layers.Conv2D
-        MaxPooling2D = tf.keras.layers.MaxPooling2D
-        Model = tf.keras.models.Model
         
         x = Input(shape=input_shape, name="input")
         img_input = x
@@ -91,13 +106,6 @@ def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):
 
 
 def vgg19_light(input_shape=[256,256,3]):
-
-    Input = tf.keras.layers.Input
-    Conv2D = tf.keras.layers.Conv2D
-    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
-    Model = tf.keras.models.Model
-    BatchNormalization = tf.keras.layers.BatchNormalization
-    Activateion = tf.keras.layers.Activation
     
     x = Input(shape=input_shape, name="input")
     img_input = x
