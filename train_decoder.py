@@ -56,7 +56,7 @@ if __name__ == '__main__':
     vgg_encoder_model.load_weights(DEFAULT_VGG_ENCODER_H5)
     vgg_decoder_model.load_weights(DEFAULT_VGG_DECODER_H5, by_name=True)
     
-    fnames = glob.glob(args.image_root + "/*.jpg")[:2]
+    fnames = glob.glob(args.image_root + "/*.jpg")
     print("{}-files to train".format(len(fnames)))
     train_generator = DecodeBatchGenerator(fnames,
                                            batch_size=min(args.batch_size, len(fnames)),
