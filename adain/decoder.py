@@ -13,15 +13,17 @@ if USE_TF_KERAS:
     Model = tf.keras.models.Model
     UpSampling2D = tf.keras.layers.UpSampling2D
     Layer = tf.keras.layers.Layer
+    SeparableConv2D = tf.keras.layers.SeparableConv2D
 else:
     Input = keras.layers.Input
     Conv2D = keras.layers.Conv2D
     Model = keras.models.Model
     UpSampling2D = keras.layers.UpSampling2D
     Layer = keras.layers.Layer
+    SeparableConv2D = keras.layers.SeparableConv2D
 
 
-def build_decoder(input_features):
+def build_vgg_decoder(input_features):
     
     # (32,32,512)
     x = input_features
@@ -58,18 +60,60 @@ def build_decoder(input_features):
     return x
 
 
-def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0):
+def build_mobile_decoder(input_features):
+    
+    # (32,32,512)
+    x = input_features
+    
+    # Block 4
+    # (32,32,512)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
+    x = UpSampling2D()(x)
+    # (64,64,256)
+
+    # Block 3
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv3_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(128, (3, 3), activation='relu', padding='valid', name='block3_conv4_decode')(x)
+    x = UpSampling2D()(x)
+
+    # Block 2
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(64, (3, 3), activation='relu', padding='valid', name='block2_conv2_decode')(x)
+    x = UpSampling2D()(x)
+
+    # Block 1
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
+    x = PostPreprocess(name="output")(x)
+    return x
+
+
+def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, model="vgg"):
     c_feat_input = Input(shape=input_shape, name="input_c")
     s_feat_input = Input(shape=input_shape, name="input_s")
     
     x = AdaIN(alpha)([c_feat_input, s_feat_input])
-    x = build_decoder(x)
+    if model == "vgg":
+        x = build_vgg_decoder(x)
+    elif model == "mobile":
+        x = build_mobile_decoder(x)
 
     model = Model([c_feat_input, s_feat_input], x, name='decoder')
     return model
 
 
 if __name__ == '__main__':
-    model = combine_and_decode_model()
+    model = combine_and_decode_model(input_shape=[32,32,512], model="mobile")
     model.summary()
 
