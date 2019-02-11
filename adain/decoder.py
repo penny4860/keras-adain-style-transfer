@@ -75,7 +75,7 @@ def build_mobile_decoder(input_features):
     # Block 4
     # (32,32,512)
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -85,28 +85,28 @@ def build_mobile_decoder(input_features):
 
     # Block 3
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
     x = Activateion("relu")(x)
 
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
     x = Activateion("relu")(x)
 
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
     x = Activateion("relu")(x)
 
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(128, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -115,14 +115,14 @@ def build_mobile_decoder(input_features):
 
     # Block 2
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(128, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
     x = Activateion("relu")(x)
 
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
@@ -131,7 +131,7 @@ def build_mobile_decoder(input_features):
 
     # Block 1
     x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization(fused=False)(x)
+    x = BatchNormalization()(x)
     x = Activateion("relu")(x)
     x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
     x = BatchNormalization()(x)
