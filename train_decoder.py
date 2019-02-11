@@ -47,7 +47,7 @@ if __name__ == '__main__':
     args = argparser.parse_args()
     
     input_size = 256
-    model = mobile_decoder(input_shape=[input_size,input_size,3])
+    model = mobile_decoder(input_shape=[int(input_size/8),int(input_size/8),512])
     if args.weights_init:
         model.load_weights(args.weights_init, by_name=True)
 
@@ -74,6 +74,4 @@ if __name__ == '__main__':
                         validation_data  = train_generator,
                         validation_steps = len(train_generator),
                         epochs=1000)
-
-
 
