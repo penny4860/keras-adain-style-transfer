@@ -62,7 +62,7 @@ if __name__ == '__main__':
                                            batch_size=min(args.batch_size, len(fnames)),
                                            encoder_model=vgg_encoder_model,
                                            decoder_model=vgg_decoder_model,
-                                           shuffle=False)
+                                           shuffle=True)
     # valid_generator = BatchGenerator(fnames[160:], batch_size=4, shuffle=False)
     
     # 2. create loss function
