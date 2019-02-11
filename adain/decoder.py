@@ -94,7 +94,7 @@ def build_mobile_decoder(input_features):
     x = SpatialReflectionPadding()(x)
     x = SeparableConv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1_decode')(x)
     x = SpatialReflectionPadding()(x)
-    x = SeparableConv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
+    x = Conv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
     x = PostPreprocess(name="output")(x)
     return x
 
@@ -114,6 +114,8 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, model="vgg"
 
 
 if __name__ == '__main__':
+    # Total params: 3,505,219
+    # Total params:   408,003
     model = combine_and_decode_model(input_shape=[32,32,512], model="mobile")
     model.summary()
 
