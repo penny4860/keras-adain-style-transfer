@@ -113,6 +113,19 @@ def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, model="vgg"
     return model
 
 
+def vgg_decoder(input_shape=[None,None,512]):
+    input_layer = Input(shape=input_shape, name="input")
+    x = build_vgg_decoder(input_layer)
+    model = Model(input_layer, x, name='vgg_decoder')
+    return model
+
+def mobile_decoder(input_shape=[None,None,512]):
+    input_layer = Input(shape=input_shape, name="input")
+    x = build_mobile_decoder(input_layer)
+    model = Model(input_layer, x, name='mobile_decoder')
+    return model
+
+
 if __name__ == '__main__':
     # Total params: 3,505,219
     # Total params:   408,003
