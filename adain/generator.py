@@ -81,4 +81,38 @@ class BatchGenerator(Sequence):
         np.random.shuffle(self.fnames)
 
 
+class DecodeBatchGenerator(Sequence):
+    def __init__(self, fnames, batch_size, shuffle, encoder_model, decoder_model, input_size=256):
+        self.fnames = fnames
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.input_size = input_size
+        
+        self.vgg_encoder = encoder_model
+        self.vgg_encoder.predict(np.zeros((1,input_size,input_size,3)))
+        self.vgg_decoder = decoder_model
+        self.vgg_decoder.predict(np.zeros((1,int(input_size/8),int(input_size/8),512)))
+        
+        self.on_epoch_end()
+
+    def __len__(self):
+        return int(len(self.fnames) /self.batch_size)
+
+    def __getitem__(self, idx):
+        """
+        # Args
+            idx : batch index
+        """
+        batch_fnames = self.fnames[idx*self.batch_size: (idx+1)*self.batch_size]
+        imgs = [cv2.imread(fname)[:,:,::-1] for fname in batch_fnames]
+        imgs = np.array([cv2.resize(img, (self.input_size,self.input_size)) for img in imgs])
+        
+        xs = self.vgg_encoder.predict(imgs)
+        ys = self.vgg_decoder.predict(xs)
+        return xs, ys
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.fnames)
+
+
 
