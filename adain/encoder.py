@@ -35,28 +35,6 @@ def vgg_encoder():
     # Todo : hard-coding
     model = Model(vgg.input, vgg.layers[-1].output)
     return model
-    
-    
-class VggPreprocess(Layer):
-
-    def __init__(self, **kwargs):
-        super(VggPreprocess, self).__init__(**kwargs)
-
-    def call(self, x):
-        import numpy as np
-        x = tf.reverse(x, axis=[-1])
-        x = x - tf.constant(np.array([103.939, 116.779, 123.68], dtype=np.float32))
-        return x
-
-
-class SpatialReflectionPadding(Layer):
-
-    def __init__(self, **kwargs):
-        super(SpatialReflectionPadding, self).__init__(**kwargs)
-
-    def call(self, x):
-        # Todo: mode="REFLECT"이 없어지면 안드로이드에서 모델 로딩이 안됨. 왜????
-        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
 
 
 def vgg19(t7_file=vgg_t7_file, input_shape=[256,256,3]):

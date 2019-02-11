@@ -1,23 +1,49 @@
-# -*- coding: utf-8 -*-
+
 
 import tensorflow as tf
-from adain.encoder import vgg_encoder
+import keras
+from adain import USE_TF_KERAS
 
 
-# def adain_combine_model(alpha):
-#     content_input_tensor = keras.layers.Input((None, None, 3))
-#     style_input_tensor = keras.layers.Input((None, None, 3))
-#     
-#     encoder = vgg_encoder()
-#     content_feature_maps = encoder(content_input_tensor)
-#     style_feature_maps = encoder(style_input_tensor)
-#     combined_feature_maps = AdaIN(alpha)([content_feature_maps, style_feature_maps])
-# 
-#     model = keras.models.Model([content_input_tensor, style_input_tensor], combined_feature_maps)
-#     return model
+if USE_TF_KERAS:
+    Layer = tf.keras.layers.Layer
+else:
+    Layer = keras.layers.Layer
 
 
-class AdaIN(tf.keras.layers.Layer):
+class VggPreprocess(Layer):
+
+    def __init__(self, **kwargs):
+        super(VggPreprocess, self).__init__(**kwargs)
+
+    def call(self, x):
+        import numpy as np
+        x = tf.reverse(x, axis=[-1])
+        x = x - tf.constant(np.array([103.939, 116.779, 123.68], dtype=np.float32))
+        return x
+
+
+class PostPreprocess(Layer):
+ 
+    def __init__(self, **kwargs):
+        super(PostPreprocess, self).__init__(**kwargs)
+ 
+    def call(self, x):
+        x = tf.clip_by_value(x, clip_value_min=0.0, clip_value_max=1.0)
+        x = x * 255
+        return x
+
+
+class SpatialReflectionPadding(Layer):
+
+    def __init__(self, **kwargs):
+        super(SpatialReflectionPadding, self).__init__(**kwargs)
+
+    def call(self, x):
+        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
+
+
+class AdaIN(Layer):
     def __init__(self, alpha=1.0, **kwargs):
         self.alpha = alpha
         super(AdaIN, self).__init__(**kwargs)
@@ -39,10 +65,4 @@ class AdaIN(tf.keras.layers.Layer):
                                                                 tf.sqrt(style_variance), epsilon)
         normalized_content_features = self.alpha * normalized_content_features + (1 - self.alpha) * content_features
         return normalized_content_features
-
-
-if __name__ == '__main__':
-    pass
-    
-
 

@@ -23,17 +23,6 @@ else:
     Layer = keras.layers.Layer
 
 
-class PostPreprocess(Layer):
- 
-    def __init__(self, **kwargs):
-        super(PostPreprocess, self).__init__(**kwargs)
- 
-    def call(self, x):
-        x = tf.clip_by_value(x, clip_value_min=0.0, clip_value_max=1.0)
-        x = x * 255
-        return x
-
-
 def combine_and_decode_model(input_shape=[None,None,512], alpha=1.0, t7_file=t7_file):
     c_feat_input = Input(shape=input_shape, name="input_c")
     s_feat_input = Input(shape=input_shape, name="input_s")
