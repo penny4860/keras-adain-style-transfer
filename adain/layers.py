@@ -39,6 +39,9 @@ class SpatialReflectionPadding(Layer):
     def __init__(self, **kwargs):
         super(SpatialReflectionPadding, self).__init__(**kwargs)
 
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], input_shape[1]+2, input_shape[2]+2, input_shape[3])
+
     def call(self, x):
         return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
 
