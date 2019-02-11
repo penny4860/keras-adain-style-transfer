@@ -1,20 +1,30 @@
 # -*- coding: utf-8 -*-
 
 import os
-from adain import PROJECT_ROOT
+from adain import PROJECT_ROOT, USE_TF_KERAS
 from adain.utils import get_params, set_params
 
 import tensorflow as tf
+import keras
 
-
-Input = tf.keras.layers.Input
-Conv2D = tf.keras.layers.Conv2D
-DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
-BatchNormalization = tf.keras.layers.BatchNormalization
-Activateion = tf.keras.layers.Activation
-MaxPooling2D = tf.keras.layers.MaxPooling2D
-Model = tf.keras.models.Model
-Layer = tf.keras.layers.Layer
+if USE_TF_KERAS:
+    Input = tf.keras.layers.Input
+    Conv2D = tf.keras.layers.Conv2D
+    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+    BatchNormalization = tf.keras.layers.BatchNormalization
+    Activateion = tf.keras.layers.Activation
+    MaxPooling2D = tf.keras.layers.MaxPooling2D
+    Layer = tf.keras.layers.Layer
+    Model = tf.keras.models.Model
+else:
+    Input = keras.layers.Input
+    Conv2D = keras.layers.Conv2D
+    DepthwiseConv2D = keras.layers.DepthwiseConv2D
+    BatchNormalization = keras.layers.BatchNormalization
+    Activateion = keras.layers.Activation
+    MaxPooling2D = keras.layers.MaxPooling2D
+    Layer = keras.layers.Layer
+    Model = keras.models.Model
 
 
 vgg_t7_file = os.path.join(PROJECT_ROOT, "pretrained", 'vgg_normalised.t7')
