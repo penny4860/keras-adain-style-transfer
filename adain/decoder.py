@@ -62,8 +62,8 @@ def build_vgg_decoder(input_features):
     x = SpatialReflectionPadding()(x)
     x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1_decode')(x)
     x = SpatialReflectionPadding()(x)
-    x = Conv2D(3, (3, 3), activation=None, padding='valid', name='block1_conv2_decode')(x)
-    x = PostPreprocess(name="output")(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='block1_conv2_decode')(x)
+    # x = PostPreprocess(name="output")(x)
     return x
 
 
@@ -137,8 +137,8 @@ def build_mobile_decoder(input_features):
     x = BatchNormalization()(x)
     x = Activateion("relu")(x)
 
-    x = Conv2D(3, (3, 3), activation=None, padding='same', name='block1_conv2_decode')(x)
-    x = PostPreprocess(name="output")(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='block1_conv2_decode')(x)
+    # x = PostPreprocess(name="output")(x)
     return x
 
 
