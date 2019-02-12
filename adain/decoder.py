@@ -14,10 +14,6 @@ if USE_TF_KERAS:
     UpSampling2D = tf.keras.layers.UpSampling2D
     Layer = tf.keras.layers.Layer
     SeparableConv2D = tf.keras.layers.SeparableConv2D
-    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
-    BatchNormalization = tf.keras.layers.BatchNormalization
-    Activateion = tf.keras.layers.Activation
-
 else:
     Input = keras.layers.Input
     Conv2D = keras.layers.Conv2D
@@ -25,9 +21,6 @@ else:
     UpSampling2D = keras.layers.UpSampling2D
     Layer = keras.layers.Layer
     SeparableConv2D = keras.layers.SeparableConv2D
-    DepthwiseConv2D = keras.layers.DepthwiseConv2D
-    BatchNormalization = keras.layers.BatchNormalization
-    Activateion = keras.layers.Activation
 
 
 def build_vgg_decoder(input_features):
@@ -74,70 +67,34 @@ def build_mobile_decoder(input_features):
     
     # Block 4
     # (32,32,512)
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block4_conv1_decode')(x)
     x = UpSampling2D()(x)
     # (64,64,256)
 
     # Block 3
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(256, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(128, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(256, (3, 3), activation='relu', padding='valid', name='block3_conv3_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(128, (3, 3), activation='relu', padding='valid', name='block3_conv4_decode')(x)
     x = UpSampling2D()(x)
 
     # Block 2
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(128, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(128, (3, 3), activation='relu', padding='valid', name='block2_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(64, (3, 3), activation='relu', padding='valid', name='block2_conv2_decode')(x)
     x = UpSampling2D()(x)
 
     # Block 1
-    x = DepthwiseConv2D((3, 3), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-    x = Conv2D(64, (1, 1), use_bias=False, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activateion("relu")(x)
-
-    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='block1_conv2_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = SeparableConv2D(64, (3, 3), activation='relu', padding='valid', name='block1_conv1_decode')(x)
+    x = SpatialReflectionPadding()(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='block1_conv2_decode')(x)
     # x = PostPreprocess(name="output")(x)
     return x
 
