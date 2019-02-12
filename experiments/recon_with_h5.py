@@ -5,10 +5,10 @@ import cv2
 import os
 
 from adain.utils import preprocess, plot
-from adain import MODEL_ROOT
+from adain import MODEL_ROOT, PROJECT_ROOT
 
 DEFAULT_ENCODER_H5 = os.path.join(MODEL_ROOT, "h5", "mobile_encoder.h5")
-DEFAULT_DECODER_H5 = os.path.join(MODEL_ROOT, "h5", "vgg_decoder.h5")
+DEFAULT_DECODER_H5 = os.path.join(PROJECT_ROOT, "mobile_decoder.h5")
 
 content_fname="../input/content/chicago.jpg"
 style_fname="../input/style/asheville.jpg"
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     from adain.encoder import mobile_encoder
     from adain.decoder import combine_and_decode_model
     encoder = mobile_encoder()
-    decoder = combine_and_decode_model()
+    decoder = combine_and_decode_model(model="mobile")
     encoder.load_weights(DEFAULT_ENCODER_H5)
     decoder.load_weights(DEFAULT_DECODER_H5)
 
